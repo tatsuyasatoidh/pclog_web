@@ -1,0 +1,38 @@
+.box{
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid #ccc;
+}
+.box_header {
+    font-size: 22px;
+    font-weight: 700;
+    padding: 10px;
+}
+#log_grid{
+    width:100%;
+}
+#log_grid td, th {
+    border: 1px solid #ccc;
+    padding: 2px;
+}
+.side_menu {
+    width: 200px;
+    min-height: 800px;
+    background: #ddd;
+}
+
+.header_menu {
+    height: 40px;
+    background: #ddd;
+}
+
+#daily_chart_box {
+    border: 1px solid #ccc;
+    min-height: 400px;
+}
+
+#daily_chart {
+    border: 1px solid #ccc;
+    height: 100%;
+}
