@@ -3,78 +3,40 @@
 class CreateGraph{
 	
 	function __construct() {
-		require("lib\mysql\ConnectMysql.php"); 
+		require("lib/mysql/ConnectMysql.php"); 
+		require("lib/CommonData.php"); 
+		require("lib/DebugInfo/DebugInfo.php"); 
 	}
 	function dailyGraph($val){
 		$ConnectMysql = new ConnectMysql();
 		$result=$ConnectMysql->loadDataIntoTmplogTable($val);
-
 		$dataPoints = [];
 		$rowcount=0;
 		$h=0;#時間
 		$i=0;#要素
 		$rowarray=[];
-		#作業量
-		foreach($result as $row){
-			$rowarray['time'][$rowcount]=$row['time'];
-			$rowarray['work'][$rowcount]=$row['work'];
-			$rowcount++;
-		}
-		
-		for($h=0;$h<=24;$h++){
-			if($h==0){
-				$hour="00";
-			}elseif($h<10){
-				$hour="0".$h;
-			}else{
-				$hour=$h;
+		#作業量がmysqlに入っているならtrue
+		if($result){
+			foreach($result as $row){
+				$rowarray['time'][$rowcount]=$row['time'];
+				$rowarray['work'][$rowcount]=$row['work'];
+				$rowcount++;
 			}
-			#全体のグラフのピースを用意
-			if($val['interval']=="15m"){
-				$m_length= 4;
-				$m_times=15;
-			}elseif($val['interval']=="30m"){
-				$m_length= 2;
-				$m_times=30;
-			}
-			
-			#表示間隔が1時間のとき分数表示はしない
-			if($val['interval'] != "1h"){
-				$m_i=0;
-				for($m=0;$m<$m_length;$m++){
-					if($m==0){
-						$min="00";
-					}else{
-						$m_i=$m_i+$i;
-						$min=($m*$m_times);
-					}
-										
-					$dataPoints[$m_i]['y']=1;
-					$dataPoints[$m_i]['name']=$hour.":".$min;
-					$dataPoints['color'][$m_i]="#ccc";
-
-					if(in_array($dataPoints[$m_i]['name'],$rowarray['time'])){
-						$arraysearch=array_search($dataPoints[$m_i]['name'],$rowarray['time']);
-						$dataPoints[$m_i]['name']=$rowarray['time'][$arraysearch];
-						#色付け
-						if($dataPoints[$m_i]['name']>=1){
-							$dataPoints['color'][$m_i]="blue";	
-						}else{
-							$dataPoints['color'][$m_i]="#ccc";
-						}
-					}
-
-					if($m!=$m_length-1){
-						$m_i++;
-					}
+				#全体のグラフのピースを用意
+				if($val['interval']=="15m"){
+					$timedata=$this->Every15MinutesData();
+				}elseif($val['interval']=="30m"){
+					$timedata=$this->Every30MinutesData();
+				}elseif($val['interval']=="1h"){
+					$timedata=$this->EveryHoursData();
 				}
+				$dataPoints=$timedata;
+				$dataPoints['title']=date('Y年m月の時間帯別作業量',strtotime($val['date']));
 			}else{
-				$min="00";
+				
+			#該当データ0件
+			$dataPoints=null;
 			}
-
-			$i++;
-		}
-		$dataPoints['title']=date('Y年m月の時間帯別作業量',strtotime($val['date']));
 
 		return $dataPoints;
 	}
@@ -110,5 +72,106 @@ class CreateGraph{
 		}else{
 			echo "該当するデータがありません。";
 		}
+	}
+	
+	function Every15MinutesData(){
+		$data=[];
+		$h='00';
+		$m='00';
+			for($i=1,$k=1;$i<=96;$i++,$k++){
+				#桁調整
+				if($m==0){
+					$m='00';
+				}
+				#時間
+				$time=$h.':'.$m;
+				#配列の要素にする
+				$data[$i]['y']=0;
+				$data[$i]['name']=$time;
+				$data['color'][$i]="#ccc";
+
+				switch($k){
+					case 1:
+						$m=15;
+						break;
+					case 2:
+						$m=30;
+						break;
+					case 3:
+						$m=45;
+						break;
+					case 4:	
+						$h= $h+1;
+						$m=0;
+						$k=0;
+						#桁調整
+						if($h<10){
+							$h='0'.$h;
+						}
+						break;
+				}
+			}
+			return $data;
+	}
+	
+	function Every30MinutesData(){
+		$data=[];
+		$h='00';
+		$m='00';
+			for($i=1,$k=1;$i<=48;$i++,$k++){
+				#桁調整
+				if($m==0){
+					$m='00';
+				}
+				#時間
+				$time=$h.':'.$m;
+				#配列の要素にする
+				$data[$i]['y']=0;
+				$data[$i]['name']=$time;
+				$data['color'][$i]="#ccc";
+
+				switch($k){
+					case 1:
+						$m=30;
+						break;
+					case 2:	
+						$h= $h+1;
+						$m=0;
+						$k=0;
+						#桁調整
+						if($h<10){
+							$h='0'.$h;
+						}
+						break;
+				}
+			}
+			return $data;
+	}
+	#１ｈのグラフデータ
+	function EveryHoursData(){
+		$data=[];
+		$h='00';
+		$m='00';
+			for($i=1;$i<=24;$i++){
+				#桁調整
+				if($m==0){
+					$m='00';
+				}
+				#時間
+				$time=$h.':'.$m;
+				#配列の要素にする
+				$data[$i]['y']=0;
+				$data[$i]['name']=$time;
+				$data['color'][$i]="#ccc";
+
+				$h= $h+1;
+				$m=0;
+				$k=0;
+				#桁調整
+				if($h<10){
+					$h='0'.$h;
+				}
+			}
+			return $data;
 	}
 }

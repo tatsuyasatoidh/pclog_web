@@ -1,6 +1,7 @@
 <?php
 require('lib/ViewCommon/CreateGraph.php');
 require('lib/ViewCommon/ValueCheck.php');
+ini_set( 'display_errors', 1 );
 $CreateGraph= new CreateGraph();	
 if(isset($_POST['submit'])){
 	$val['company']=$_POST['company'];
@@ -15,6 +16,7 @@ if(isset($_POST['submit'])){
 	$val['interval']="";
 }
 	$dataPoints=$CreateGraph->dailyGraph($val);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +29,7 @@ if(isset($_POST['submit'])){
     <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="css/local.css" />
 
-    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="lib/jquery/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
     <!-- you need to include the shieldui css and js assets in order for the charts to work -->
@@ -55,8 +57,8 @@ if(isset($_POST['submit'])){
 	</div>
 		<form method="post">
 			<label for="company">企業名</label><input type="text" name="company" value="<?php echo $val['company'] ;?>">
-			<label for="user_name" >ユーザー</label><input type="text" name="user_name" id="user_name" value="<?php echo $val['user_name'] ;?>">
-			<label>年月日</label><input type="date" name="date" value="<?php echo $val['date'] ;?>">
+			<label for="user_name" >ユーザー</label><input type="text" name="user_name" id="user_name" value="<?php echo $val['user_name'] ;?>" required>
+			<label>年月日</label><input type="date" name="date" value="<?php echo $val['date'] ;?>" required>
 			<label>表示間隔</label>
 			<select name="interval">
 				<option value="15m">15分間隔</option>
@@ -77,41 +79,41 @@ if(isset($_POST['submit'])){
 	</div>
 	</div>
 	</div>
-	</div>
-
+	</div><?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
 	</div>
 </div>
     <!-- /#wrapper -->
- 
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script src="lib/canvas/canvasjs.min.js"></script>
-        <script type="text/javascript">
-            $(function () {
-								CanvasJS.addColorSet("pieColor",<?php echo json_encode($dataPoints['color'], JSON_NUMERIC_CHECK); ?>);
-								<?php unset($dataPoints['color']);?>
-
-                var chart = new CanvasJS.Chart("chartContainer",
-                {
-                    theme: "theme2",
-                    title:{
-                        text: <?php echo json_encode($dataPoints['title'], JSON_NUMERIC_CHECK); ?>
-                    },
-										colorSet: "pieColor",
-                    exportFileName: "New Year Resolutions",
-                    exportEnabled: true,
-                    animationEnabled: true,
-										<?php unset($dataPoints['title']);?>
-                    data: [
-                    {       
-												type: "pie",
-												indexLabelPlacement: "inside", 
-												toolTipContent: "{name}",
-												startAngle:-90, 
-                        dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
-                    }]
-                });
-                chart.render();
-            });
-        </script>
+<?php if($dataPoints!=NULL): ?>
+		<script src="lib/canvas/canvasjs.min.js"></script>
+		<script type="text/javascript" async>
+				$(function () {
+						CanvasJS.addColorSet("pieColor",<?php echo json_encode($dataPoints['color'], JSON_NUMERIC_CHECK); ?>);
+						<?php unset($dataPoints['color']);?>
+						var chart = new CanvasJS.Chart("chartContainer",
+						{
+								theme: "theme2",
+								title:{
+										text: <?php echo json_encode($dataPoints['title'], JSON_NUMERIC_CHECK); ?>
+								},
+								colorSet: "pieColor",
+								exportFileName: "New Year Resolutions",
+								exportEnabled: true,
+								animationEnabled: true,
+								<?php unset($dataPoints['title']);?>
+								data: [
+								{       
+										type: "pie",
+										indexLabelPlacement: "inside", 
+										toolTipContent: "{name}",
+										startAngle:-90, 
+										dataPoints: 
+								}]
+						});
+						chart.render();
+				});
+		</script>
+<?php else:?>
+	<script type="text/javascript">$('#chartContainer').text("該当データがありません。");</script>
+<?php endif;?>
 </body>
 </html>
