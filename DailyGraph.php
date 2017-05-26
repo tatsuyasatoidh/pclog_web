@@ -5,13 +5,10 @@ ini_set( 'display_errors', 1 );
 
 $CreateGraph= new CreateGraph();	
 if(isset($_POST['submit'])){
-	
 	$val['company']=$_POST['company'];
 	$val['user_name']=$_POST['user_name'];
 	$val['date']=$_POST['date'];
 	$val['interval']=$_POST['interval'];
-	
-
 }else{
 	$val['company']="";
 	$val['user_name']="";
@@ -41,11 +38,11 @@ $dataPoints=$CreateGraph->dailyGraph($val);
 <body>
 <header><?php require('common\Header.php');?></header>
 <div id="wrapper">
-		<div class="row">
-				<div class="col-lg-12">
-						<h1>時間帯別日間作業量 <small>Dashboard Home</small></h1>
-				</div>
-		</div> 
+	<div class="row">
+	<div class="col-lg-12">
+	<h1>時間帯別日間作業量 <small>Dashboard Home</small></h1>
+	</div>
+	</div> 
 <div class="panel panel-primary">
 	<div class="panel-heading">
 	<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>時間帯別日間作業量</h3>
