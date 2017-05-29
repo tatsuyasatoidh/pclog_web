@@ -3,7 +3,7 @@ class ListTable{
 	public $ConnectMysql;
 	
 	function __construct() {
-		require("lib\mysql\ConnectMysql.php"); 
+		require "/var/www/html/lib/mysql/ConnectMysql.php"; 
 	}
 
 	function pcLogList($val){

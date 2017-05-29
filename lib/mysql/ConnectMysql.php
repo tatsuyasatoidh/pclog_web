@@ -7,18 +7,24 @@ class ConnectMysql extends PDO{
 			$dsn = 'mysql:dbname=pclog;host=localhost';
 			$user = 'root';
 			$password = '';
-
 			try{
 				$pdo = parent::__construct($dsn, $user, $password);
 			}catch (PDOException $e){
 				print('Connection failed:'.$e->getMessage());
 				die();
 			}
-		}
-		return $pdo;
+		}else{
+			try{
+				$pdo=parent::__construct('mysql:dbname=pclog;host=mysqlpclog.cnbqylofmo1r.sa-east-1.rds.amazonaws.com','root','idhpclogtool'); 
+			}catch (PDOException $e){
+				print('Connection failed:'.$e->getMessage());
+				die();
+			}
 	}
-    
-	function query($sql){
+	return $pdo;
+}
+
+function query($sql){
 		$result = parent::query($sql);
 		return $result;
 	}

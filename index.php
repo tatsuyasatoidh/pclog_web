@@ -1,8 +1,9 @@
-<?php 
+<?php ini_set( 'display_errors', 1 );
+echo "test";
+
 require('lib/ViewCommon/ListTable.php');
 require('lib/ViewCommon/ValueCheck.php');
 $ListTable=new ListTable();
-
 if(isset($_POST['submit'])){
 	$val['company']=$_POST['company'];
 	$val['user']=$_POST['user'];
@@ -38,7 +39,7 @@ if(isset($_POST['submit'])){
 <body>
     <div id="wrapper">
 				<header>
-						<?php require('common\Header.php');?>
+						<?php require "/var/www/html/common/Header.php";?>
 				</header>
             <div class="row">
                 <div class="col-lg-12">

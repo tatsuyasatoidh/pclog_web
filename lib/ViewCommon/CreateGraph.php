@@ -3,9 +3,11 @@
 class CreateGraph{
 	
 	function __construct() {
-		require("lib/mysql/TmpLogModel.php"); 
-		require("lib/CommonData.php"); 
-		require("lib/DebugInfo/DebugInfo.php"); 
+
+		require "lib/mysql/TmpLogModel.php" ; 
+		require "lib/CommonData.php" ; 
+		require "lib/DebugInfo/DebugInfo.php"; 
+
 	}
     
 	function dailyGraph($val){
@@ -37,7 +39,6 @@ class CreateGraph{
 		
 		#グラフのタイトル作成
 		$dataPoints['title']=$this->createGraphTitle($val['date']);	
-
 		return $dataPoints;
 	}
 	

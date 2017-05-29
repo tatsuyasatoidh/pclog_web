@@ -1,6 +1,6 @@
 <?php
-require('lib/ViewCommon/CreateGraph.php');
-require('lib/ViewCommon/ValueCheck.php');
+require 'lib/ViewCommon/CreateGraph.php';
+require 'lib/ViewCommon/ValueCheck.php';
 
 $CreateGraph= new CreateGraph();	
 if(isset($_POST['submit'])){
@@ -33,7 +33,7 @@ if(isset($_POST['submit'])){
     <script type="text/javascript" src="http://www.prepbootstrap.com/Content/js/gridData.js"></script>
 </head>
 <body>
-<header><?php require('common\Header.php');?></header>
+<header><?php require 'common/Header.php';?></header>
 <div id="wrapper">
 		<div class="row">
 				<div class="col-lg-12">

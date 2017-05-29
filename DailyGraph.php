@@ -1,16 +1,16 @@
 <?php
-require('lib/ViewCommon/CreateGraph.php');
-require('lib/ViewCommon/ValueCheck.php');
+require 'lib/ViewCommon/CreateGraph.php';
+require 'lib/ViewCommon/ValueCheck.php';
 ini_set( 'display_errors', 1 );
 
 $CreateGraph= new CreateGraph();	
+
 if(isset($_POST['submit'])){
 	
 	$val['company']=$_POST['company'];
 	$val['user_name']=$_POST['user_name'];
 	$val['date']=$_POST['date'];
 	$val['interval']=$_POST['interval'];
-	
 
 }else{
 	$val['company']="";
@@ -20,7 +20,9 @@ if(isset($_POST['submit'])){
 }
 #boolean
 $dataPoints=$CreateGraph->dailyGraph($val);
-		;?>
+
+
+;?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +41,7 @@ $dataPoints=$CreateGraph->dailyGraph($val);
     <script type="text/javascript" src="http://www.prepbootstrap.com/Content/js/gridData.js"></script>
 </head>
 <body>
-<header><?php require('common\Header.php');?></header>
+<header><?php require 'common/Header.php';?></header>
 <div id="wrapper">
 		<div class="row">
 				<div class="col-lg-12">
