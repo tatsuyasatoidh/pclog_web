@@ -1,6 +1,6 @@
 <?php
-require("lib/mysql/ConnectMysql.php"); 
-class TmpLogModel extends ConnectMysql{
+include_once dirname(__FILE__)."/ConnectMysql.php"; 
+class TmpLogDao extends ConnectMysql{
 	
 	function __construct() {
      

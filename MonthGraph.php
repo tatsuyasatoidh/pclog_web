@@ -1,18 +1,9 @@
 <?php
-require 'lib/ViewCommon/CreateGraph.php';
+require_once 'lib/CreateFigure/CreateGraph.php';
 require 'lib/ViewCommon/ValueCheck.php';
 
 $CreateGraph= new CreateGraph();	
-if(isset($_POST['submit'])){
-	$val['company']=$_POST['company'];
-	$val['user']=$_POST['user'];
-	$val['month']=$_POST['month'];	
-}else{
-	$val['company']="";
-	$val['user']="";
-	$val['month']="";
-}
-	$dataPoints = $CreateGraph->monthGraph($val);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,12 +16,13 @@ if(isset($_POST['submit'])){
     <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="css/local.css" />
 
-    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="http://www.shieldui.com/shared/components/latest/css/light-bootstrap/all.min.css" />
-    <script type="text/javascript" src="http://www.shieldui.com/shared/components/latest/js/shieldui-all.min.js"></script>
-    <script type="text/javascript" src="http://www.prepbootstrap.com/Content/js/gridData.js"></script>
+
+    <script type="text/javascript" src="js/jquery.js"></script> 
+<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/datatables/jquery.dataTables.js"></script>
+<script src="js/Charts.js/dist/Chart.Bundle.js"></script>
+<script src="js/Charts.js/utils.js"></script>
 </head>
 <body>
 <header><?php require 'common/Header.php';?></header>
@@ -50,37 +42,54 @@ if(isset($_POST['submit'])){
 				<div class="panel-heading">
 				</div>
 				<form method="post">
-					<label>企業名</label><input type="text" name="company" value="<?php echo $val['company'] ;?>">
-					<label for="user" >ユーザー</label><input type="text" name="user" id="user" value="<?php echo $val['user'] ;?>">
-					<label>年月日</label><input type="month" name="month" value="<?php echo $val['month'] ;?>">
+					<label>企業名</label><input type="text" name="company" required>
+					<label for="user" >ユーザー</label><input type="text" name="user" id="user" required>
+					<label>年月日</label><input type="month" name="month" required>
 					<button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
 				</form>
 				</div>
 			</div>
-			</div>
-	</div>
-	<div class="col-lg-12">
-		<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i><?php echo $dataPoints['title']; unset($dataPoints['title'])?></h3>
-		<div id="chartContainer"></div>
+			</div> <canvas id="canvas" style="height:20px"></canvas>
 	</div>
 	</div>
 	</div>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script src="lib/canvas/canvasjs.min.js"></script>
-<script type="text/javascript">
-		$(function () {
-				var chart = new CanvasJS.Chart("chartContainer", {
-						theme: "theme2",
-						animationEnabled: true,
-						data: [
-						{
-								type: "column",                
-								dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
-						}
-						]
-				});
-				chart.render();
-		});
-</script>
+<?php if(isset($_POST['submit'])):
+    if($CreateGraph->monthGraph($_POST)):?>
+    <script>
+    var $monthjsondata ='<?= json_encode($CreateGraph->getResult());?>';
+    var $monthdata =JSON.parse($monthjsondata);
+    var $workdata = $monthdata["work"];
+    var $datetime = $monthdata["date"];
+    var color = Chart.helpers.color;
+    var horizontalBarChartData = {
+        labels: $datetime,
+        datasets: [{
+            label: '作業量',
+            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+            borderColor: window.chartColors.red,
+            borderWidth: 1,
+            data: $workdata
+        }, ],
+    };
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myHorizontalBar = new Chart(ctx, {
+                type: 'bar',
+                data: horizontalBarChartData,
+                options: {
+                    elements: {
+                        rectangle: {
+                            borderWidth: 2,
+                        }
+                    },
+                    responsive: true,
+                    legend: {
+                        position: 'right',
+                    },
+                    height: 60,
+                }
+            });
+    </script>
+<?php endif;?>
+<?php endif;?>
 </body>
 </html>

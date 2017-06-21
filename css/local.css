@@ -1,4 +1,4 @@
-/* Deep Blue Admin Bootstrap Theme by PrepBootstrap - http://www.prepbootstrap.com */
+﻿/* Deep Blue Admin Bootstrap Theme by PrepBootstrap - http://www.prepbootstrap.com */
 body {
   margin-top: 70px;
 }
@@ -990,7 +990,6 @@ a.list-group-item-danger.active:focus {
 }
 .panel {
   margin-bottom: 20px;
-	margin-right: 1%;
   background-color: #ffffff;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -1414,7 +1413,7 @@ table.tablesorter thead tr th:hover {
   .side-nav {
 	margin-left: -225px;
 	left: 225px;
-	width: 180px;
+	width: 225px;
 	position: fixed;
 	top: 50px;
 	height: 100%;
@@ -1427,7 +1426,7 @@ table.tablesorter thead tr th:hover {
   /*menu overrides*/
   .side-nav>li.dropdown>ul.dropdown-menu {
 	position: relative;
-	min-    width: 180px;
+	min-width: 225px;
 	margin: 0;
 	padding: 0;
 	border: none;
@@ -1447,7 +1446,7 @@ table.tablesorter thead tr th:hover {
 	background-color: #080808;
   }
   .side-nav>li>a {
-	    width: 180px;
+	width: 225px;
   }
 
   .navbar-inverse .navbar-nav>li>a:hover,

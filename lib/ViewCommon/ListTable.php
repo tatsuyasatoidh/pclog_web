@@ -1,14 +1,20 @@
 <?php
+include_once dirname(__FILE__)."/../mysql/ConnectMysql.php"; 
+include_once dirname(__FILE__)."/../Dao/pclogDao.php"; 
+
 class ListTable{
 	public $ConnectMysql;
 	
-	function __construct() {
-		require "/var/www/html/lib/mysql/ConnectMysql.php"; 
-	}
-
 	function pcLogList($val){
-		$ConnectMysql = new ConnectMysql();
-		$result=$ConnectMysql->selectPclogJoinUserJoinCompany($val);
+      $PclogDao = new PclogDao();
+      
+    if(!($val["company"] == null and $val["user"]==null and $val["start_date"]==null and $val["end_date"]==null)){
+        
+        $result=$PclogDao->getAllWhere($val['company'], $val['user'], $val['start_date'], $val['end_date']);
+        
+    }  else { 
+        $result=$PclogDao->getAll();
+    }
 		if($result){
 			$tr_count=0;
 			echo 
