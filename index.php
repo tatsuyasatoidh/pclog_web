@@ -1,6 +1,5 @@
-<?php ini_set( 'display_errors', 1 );
-echo "test";
-
+<?php 
+ini_set( 'display_errors', 1 );
 require('lib/ViewCommon/ListTable.php');
 require('lib/ViewCommon/ValueCheck.php');
 $ListTable=new ListTable();

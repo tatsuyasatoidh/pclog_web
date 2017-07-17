@@ -41,12 +41,20 @@ $CreateGraph= new CreateGraph();
 				<div class="panel">
 				<div class="panel-heading">
 				</div>
-				<form method="post">
-					<label>企業名</label><input type="text" name="company" required>
-					<label for="user" >ユーザー</label><input type="text" name="user" id="user" required>
-					<label>年月日</label><input type="month" name="month" required>
-					<button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
-				</form>
+<?php
+    /*フォームの作成*/
+    $formController = new formController();
+    $userOption=$formController->getUserOption();
+    $companyOption=$formController->getCompanyOption();
+?>
+    <div>
+        <form method="post">
+            <label>企業名</label><select name="company" id="company" style="height: 40px;"><?= $companyOption;?></select>
+            <label for="user" >ユーザー</label><select name="user" id="user" style="height: 40px;"><?= $userOption;?></select>
+            <label>年月</label><input type="month" name="month" required style="height: 40px;">
+            <button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
+        </form>
+    </div>
 				</div>
 			</div>
 			</div> <canvas id="canvas" style="height:20px"></canvas>
@@ -91,5 +99,12 @@ $CreateGraph= new CreateGraph();
     </script>
 <?php endif;?>
 <?php endif;?>
+<script type="text/javascript" charset="utf-8">
+    var $jsondata = '<?= json_encode ($_POST);?>'
+    var $data = JSON.parse($jsondata);
+    $('#company').val($data['company']);
+    $('#user').val($data['user']);
+    $('#date').val($data['date']);    
+</script>
 </body>
 </html>

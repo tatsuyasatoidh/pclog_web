@@ -1,11 +1,8 @@
 <?php
+require_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Common/autoloader.php';
+include_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Common/ParentController.php';
 
-include_once dirname(__FILE__)."/../Dao/TmpLogDao.php" ; 
-include_once dirname(__FILE__)."/../Dao/pcLogDao.php" ; 
-include_once dirname(__FILE__)."/../Common/DBConn.php" ; 
-
-
-class CreateGraph{
+class CreateGraph extends ParentController{
     private $Ymd;
     private $user;
     private $company;
@@ -13,7 +10,7 @@ class CreateGraph{
     private $result;
     
     private function setVal($date, $company, $user, $interval){
-        $this->Ymd      = $date;
+        $this->Ymd      = date('Ymd',strtotime($date));
         $this->company  = $company;
         $this->user     = $user;
         $this->interval = $interval;
@@ -21,8 +18,9 @@ class CreateGraph{
     
     private function create()
     {
-
         $TmpLogDao = new TmpLogDao();
+        $downLoad = new DownLoad();
+        $fileManage = new FileManage();
         $dataPoints = [];
         
         #時間ごとの作業量０の配列を作成。
@@ -30,28 +28,37 @@ class CreateGraph{
         
         #一時テーブルから検索日とユーザー名の組み合わせのものを削除。
         $TmpLogDao->delete($this->user, $this->Ymd);
-        
-        #一時テーブルから検索日とユーザー名の組み合わせのものを格納。
-        $result=$TmpLogDao->loadData($this->user, $this->Ymd);
+        #引数から取り出すkeyを生成
+        $filepath = "log/". $this->company. "/" .$this->user. "/" .$this->Ymd;
+        #s3からファイルを取り出す。
+        $csvFile = $downLoad->getLogCsv($filepath);
+        #$csvFileの値が空文字の場合はfalseを返す。
+        if($csvFile!=""){
+            $csvArray = $fileManage->csvToArray($csvFile);
+            
+            #一時テーブルに配列を保存。
+            $result=$TmpLogDao->loadData($csvArray);
+            
+            if($result){
+                $seachVal=$TmpLogDao->getSumWorks($this->user, $this->Ymd, $this->interval);
 
-        if($result){
-            
-            $seachVal=$TmpLogDao->getSumWorks($this->user, $this->Ymd, $this->interval);
-            
-            if($seachVal){
-              
-                #検索した日の作業量と比較し配列を作成
-                $dataPoints=$this->compareMysqlLog($tmplateVal,$seachVal);
-                
+                if($seachVal){
+
+                    #検索した日の作業量と比較し配列を作成
+                    $dataPoints=$this->compareMysqlLog($tmplateVal,$seachVal);
+
+                }else{
+                    $dataPoints=false;
+                }
             }else{
                 $dataPoints=false;
             }
+            $this->result = $dataPoints;
+  
         }else{
-            $dataPoints=false;
+            $dataPoints = false;
         }
-        $this->result = $dataPoints;
-        
-        return true;
+        return $dataPoints;
     }
 	
     public function getResult()
@@ -70,7 +77,6 @@ class CreateGraph{
     {
         $this->setVal($val['date'], $val['company'], $val['user'],"15m");
         $result = $this->create();
-        
         if(!$result){
             return $this->dataNotAvailable();
         }else{
@@ -279,7 +285,7 @@ class CreateGraph{
 
     /*抽出結果が0件*/
   protected function dataNotAvailable(){
-    var_dump("data not available");
+    parent::setInfoLog("data not available");
     return false;  
   }
     

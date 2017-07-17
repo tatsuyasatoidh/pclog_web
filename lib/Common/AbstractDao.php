@@ -1,6 +1,7 @@
 <?php
-include_once dirname(__FILE__).'/../Common/DBConn.php';
+include_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Common/autoloader.php';
 include_once dirname(__FILE__).'/../Log4j/Logger.php';
+
 abstract class AbstractDao {
     // http://php.net/manual/kr/mysqli-stmt.bind-param.php
     // http://php.net/manual/en/mysqli.prepare.php
@@ -16,7 +17,7 @@ abstract class AbstractDao {
 
     protected function getStmt($qy) {
         $this->db = new DBConn ();
-        $stmt = $this->db->prepare ( $qy );
+        $stmt = $this->db->stmtPrepare ( $qy );
         return $stmt;
     }
     protected function commitStmt($qy) {
@@ -33,7 +34,9 @@ abstract class AbstractDao {
     }
 
     protected function setInfoLog($message) {
-        $this->logger->info ( $message );
+        //$this->logger->info ( $message );
+        $dbug = debug_backtrace();
+       // var_dump("<pre>"."file :".$dbug[0]['file']." line :".$dbug[0]['line']." "." function :".$dbug[1]['function']." <br>".$message."</pre>");
     }
 
     protected function setErrorLog($message) {

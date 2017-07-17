@@ -1,5 +1,5 @@
-<?php 
-require_once 'lib/CreateFigure/CreateGraph.php';
+<?php ini_set( 'display_errors', 1 );
+require_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Common/autoloader.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,11 +11,12 @@ require_once 'lib/CreateFigure/CreateGraph.php';
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="css/local.css" />
+    <link rel="stylesheet" type="text/css" href="css/add.css" />
 
     <script type="text/javascript" src="js/jquery.js"></script> 
-<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/datatables/jquery.dataTables.js"></script>
-<script src="js/Charts.js/dist/Chart.Bundle.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/datatables/jquery.dataTables.js"></script>
+    <script src="js/Charts.js/dist/Chart.Bundle.js"></script>
     <script src="js/Charts.js/utils.js"></script>
 
 </head>
@@ -24,22 +25,30 @@ require_once 'lib/CreateFigure/CreateGraph.php';
 <div id="wrapper">
 		<div class="row">
 				<div class="col-lg-12">
-						<h1>時間帯別日間作業量 <small>Dashboard Home</small></h1>
+						<h1>時間帯別日間作業量</h1>
 				</div>
 		</div> 
      
 <div class="panel panel-primary">
 	<div class="panel-heading">
-	<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>時間帯別日間作業量</h3>
+	   <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>時間帯別日間作業量</h3>
 	</div>
-        <div>
-            <form method="post">
-                <label>企業名</label><input type="text" name="company" id="company">
-                <label for="user" >ユーザー</label><input type="text" name="user" id="user">
-                <label>年月日</label><input type="date" name="date" id="date">
-                <button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
-            </form>
-        </div>
+<?php
+    /*フォームの作成*/
+    $formController = new formController();
+    $userOption=$formController->getUserOption();
+    $companyOption=$formController->getCompanyOption();
+?>
+    <div>
+        <form method="post">
+            <label>企業名</label><select name="company" id="company" required style="height: 40px;"><?= $companyOption;?></select>
+            <label for="user" >ユーザー</label><select name="user" id="user" required style="height: 40px;"><?= $userOption;?></select>
+            <label>年月日</label><input type="date" name="date" id="date" required style="height: 40px;">
+            <label>間隔</label><select name="type" id=""><option value="15" required style="height: 40px;">15分間</option><option value="60">1時間</option></select>
+            <button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
+        </form>
+    </div>
+
     </div>
 <div class="row">
     <div class="col-lg-12">
@@ -51,77 +60,44 @@ require_once 'lib/CreateFigure/CreateGraph.php';
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-lg-6">
-        <div class="panel panel-default ">
-            <div id="attendance_body" class="panel-body">
-                <div class="col-xs-5">
-                    <i class="fa fa-briefcase fa-5x"></i>
-                </div>
-                <div class="col-xs-5 text-right">                
-                    <p id="attendance" class="alerts-heading"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-        <div class="col-lg-6">
-        <div class="panel panel-default ">
-            <div class="panel-body alert-info">
-                <div class="col-xs-5">
-                    <i class="fa fa-line-chart fa-5x"></i>
-                </div>
-                <div class="col-xs-5 text-right">
-                    <p id="total_work" class="alerts-heading"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-    
-<div class="row">
-    <div class="col-lg-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>15分別作業量</h3>
-            </div>
-            <div class="panel-body">
-                <canvas id="1hourchart-area" />
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>15分別作業量</h3>
-            </div>
-           <div id="canvas-holder" style="height: 270px;overflow-y: scroll;">
-                <table id="hour_grid"><tr><th>時間</th><th>作業量</th><th>勤務</th></tr></table>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    
-      <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>一時間別作業量</h3>
-                        </div>
-                        <div class="panel-body">
-                            <canvas id="canvas" style="height:20px"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-
-    
-
 <?php 
     if(isset($_POST['submit'])):
     $CreateGraph = new CreateGraph();
 ?>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default ">
+                <div id="attendance_body" class="panel-body">
+                    <div class="col-xs-5">
+                        <i class="fa fa-briefcase fa-5x"></i>
+                    </div>
+                    <div class="col-xs-5 text-right">                
+                        <p id="attendance" class="alerts-heading"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="col-lg-6">
+            <div class="panel panel-default ">
+                <div class="panel-body alert-info">
+                    <div class="col-xs-5">
+                        <i class="fa fa-line-chart fa-5x"></i>
+                    </div>
+                    <div class="col-xs-5 text-right">
+                        <p id="total_work" class="alerts-heading"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php if($_POST['type'] == '15'):?>
+        <?php require_once $_SERVER ['DOCUMENT_ROOT'].'/common/15minGraph.php';?>
+    <?php endif;?>
+    <?php if($_POST['type'] == '60'):?>   
+        <?php require_once $_SERVER ['DOCUMENT_ROOT'].'/common/1hourGraph.php';?>  
+    <?php endif;?>  
+<?php endif;?>
+</div>
 <script type="text/javascript" charset="utf-8">
     var $jsondata = '<?= json_encode ($_POST);?>'
     var $data = JSON.parse($jsondata);
@@ -129,147 +105,6 @@ require_once 'lib/CreateFigure/CreateGraph.php';
     $('#user').val($data['user']);
     $('#date').val($data['date']);    
 </script>
-    
-<script>
-<?php if($CreateGraph->fifteenthMin($_POST)):?>
-var $hourjsondata ='<?= json_encode($CreateGraph->getResult());?>';
-var $hourdata =JSON.parse($hourjsondata);
-var $workdata = $hourdata["work"];
-var $timedata = $hourdata["time"];
-var $colorArray = [];
-var $attendanceArray = [];
-    $workdata.forEach(function($val){
-        var $colorData =(($val >= 900)?'#044C92':'gray');      
-        var $attendance =(($val >= 900)?'○':'×');      
-        $colorArray.push($colorData);
-        $attendanceArray.push($attendance);
-    });
-var config = {
-    type: 'pie',
-    data: {
-        datasets: [{
-            data: [
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
 
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-                10,10,10,10,
-            ],
-            backgroundColor:$colorArray,
-        }],
-        labels: [
-            $timedata
-        ]
-    },
-   
-    options: {
-        responsive: true,
-         legend: {
-            display: false
-     },
-        tooltips: {
-        mode: false
-        },
-    }
-};
-    var ctx = document.getElementById("1hourchart-area").getContext("2d");
-    window.myPie = new Chart(ctx, config);
-
-var colorNames = Object.keys(window.chartColors);
-
-var $attendanceboolean = [];
-for($i = 0; $i<96;$i++){
-    $("#hour_grid").append("<tr><td>" + $timedata[$i] + "</td><td>" + $workdata[$i] + "</td><td>"+$attendanceArray[$i]+"</td></tr>");
-    if($attendanceArray[$i] == "○"){
-        $attendanceboolean.push("○");
-    }
-   
- }
-    
- if($attendanceboolean.length >=32){
-    $("#attendance").text("○");
-    $("#attendance_body").addClass("alert-success");
- }else{
-    $("#attendance").text("×");
-    $("#attendance_body").addClass("alert-danger");
- };
-    
-</script>
-<?php endif;?>
-    
-    
-    
-    
-<?php if($CreateGraph->hourhMin($_POST)):?>
-    <script>
-    var $fifteenthjsondata ='<?= json_encode($CreateGraph->getResult());?>';
-    var $fifteenthdata =JSON.parse($fifteenthjsondata);
-    var $workdata = $fifteenthdata["work"];
-    var $timedata = $fifteenthdata["time"];
-    var color = Chart.helpers.color;
-    var horizontalBarChartData = {
-        labels: $timedata,
-        datasets: [{
-            label: '作業量',
-            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-            borderColor: window.chartColors.red,
-            borderWidth: 1,
-            data: $workdata
-        }, ],
-        title: {
-            display: true,
-            text: '15分別作業量'
-        },
-    };
-            var ctx = document.getElementById("canvas").getContext("2d");
-            window.myHorizontalBar = new Chart(ctx, {
-                type: 'bar',
-                data: horizontalBarChartData,
-                options: {
-                    elements: {
-                        rectangle: {
-                            borderWidth: 2,
-                        }
-                    },
-                    responsive: true,
-                    legend: {
-                        position: 'right',
-                    },
-                    height: 60,
-                }
-            });
-    </script>
-<?php endif;?>
-<script>
-/* 検索日の総作業量 */
-var $total_work = <?= $CreateGraph->getTotalWork();?>;
-$("#total_work").text("<?= $CreateGraph->getTotalWork();?>");
-</script>    
-
-<?php 
-    endif;
-?>        
-    
+</body>
 </html>

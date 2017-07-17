@@ -4,12 +4,13 @@ include_once dirname(__FILE__).'/../Entity/TmpLog.php';
 
 class TmpLogDao extends AbstractDao {
 
+    private $logPath = "log";    
+    
     /*
     * tmplogを削除
     * ファイルからデータを取得する前に一度初期化してデータのずれを防ぐ
     */
     public function delete($user_name, $date) {
-        
        try {
             $qy = " DELETE FROM pclog.tmp_log ";
             $qy .=" WHERE user_name='$user_name' AND date='$date'";
@@ -23,17 +24,29 @@ class TmpLogDao extends AbstractDao {
     }
     
     /*
-    * csvファイルからデータをinto
+    * csvファイルからデータをmysqlテーブルにデータを格納する
     */
-    function loadData($user_name, $date){
-        $date = date('Ymd',strtotime($date));
-        #LOADDATA
-        $filepath= "C:/xampp/htdocs/pclog/var/Log/".$user_name."/".$date."/log.csv";
-        if(file_exists($filepath)){
-            $qy="LOAD DATA INFILE '$filepath' INTO TABLE tmp_log FIELDS TERMINATED BY ','";
+    function loadData($array){
+         for($i=0;$i<count($array);$i++)
+        {
+            $userName =(($array[$i][0]));
+            $date =(($array[$i][1]));
+            $time =(($array[$i][2]));
+            $work =1;
+        
+            $qy=
+                'INSERT INTO pclog.tmp_log(
+                    `user_name`,
+                    `date`,
+                    `time`,
+                    `work`
+                )VALUES (
+                    "'.$userName.'", 
+                    "'.$date.'", 
+                    "'.$time.'",
+                    "'.$work.'"
+                )';
             $result=parent::commitStmt($qy);
-        }else{
-            return false;
         }
         return $result;
 	   }  

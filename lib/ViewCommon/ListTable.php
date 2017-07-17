@@ -17,19 +17,19 @@ class ListTable{
     }
 		if($result){
 			$tr_count=0;
-			echo 
-<<< EOM
-				<tr>
-				<th>No</th>
-				<th>取得日</th>
-				<th>企業名</th>
-				<th>ユーザー</th>
-				<th>作業数</th>
-				<th>ログファイル</th>
-				</tr>
-EOM
-;
+                echo "<tr>";
+                echo "<th>No</th>";
+                echo "<th>取得日</th>";
+                echo "<th>企業名</th>";
+                echo "<th>ユーザー</th>";
+                echo "<th>作業数</th>";
+                echo "<th>ログファイル</th>";
+                echo "</tr>";
+            
 			foreach($result as $row){
+                $funcPath="/lib/Controller/Download/getLogCsv.php";
+                $path="log/".h($row['company_name'])."/".h($row['user_name'])."/".date('Ymd',strtotime(h($row['date'])));
+                $href=$funcPath."/?log_path=".$path;
 				$tr_count++;
 				echo "<tr>";
 				echo "<td>".$tr_count."</td>";
@@ -37,7 +37,7 @@ EOM
 				echo "<td>".h($row['company_name'])."</td>";
 				echo "<td>".h($row['user_name'])."</td>";
 				echo "<td>".h($row['number_of_work'])."</td>";
-				echo "<td>"."ログファイル"."</td>";
+				echo "<td><a href='$href'>ログファイル</a></td>";
 				echo "</tr>";
 			}
 		}else{

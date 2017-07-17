@@ -1,12 +1,12 @@
 <?php
 error_reporting ( E_ALL ^ E_NOTICE );
+include_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Common/autoloader.php';
 date_default_timezone_set ( "Asia/Tokyo" );
-include_once dirname(__FILE__).'/../Common/SessionClass.php';
 include_once dirname(__FILE__).'/../Log4j/Logger.php';
 abstract class AbstractController extends SessionClass {
 	private $param;
 	private $logger;
-	public function run() {
+/*	public function run() {
 		try {
 			Logger::configure ( $_SERVER ['DOCUMENT_ROOT'] . '/Household/Log4j/config.xml' );
 			$this->logger = Logger::getLogger ( get_class ( $this ) );
@@ -126,7 +126,7 @@ abstract class AbstractController extends SessionClass {
 		} finally {
 			fclose ( $file );
 		}
-	}
+	}*/
 	protected function moveFile($source, $destination) {
 		rename ( $source, $destination );
 	}
@@ -134,7 +134,8 @@ abstract class AbstractController extends SessionClass {
 		$this->logger->debug ( $message );
 	}
 	protected function setInfoLog($message) {
-		$this->logger->info ( $message );
+        $dbug = debug_backtrace();
+        var_dump("<pre>"."file :".$dbug[0]['file']." line :".$dbug[0]['line']." "." function :".$dbug[1]['function']." <br>".$message."</pre>");
 	}
 	protected function setErrorLog($message) {
 		$this->logger->error ( $message );
