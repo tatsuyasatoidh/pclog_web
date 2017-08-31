@@ -53,9 +53,7 @@ class TmpLogDao extends AbstractDao {
     
     
    public function getSumWorks($user, $date, $interval){
-       
 		$result ="";
-       
 		if($interval=='15m'){
         #15分
         $qy="SELECT SUM(work) AS work ,FROM_UNIXTIME(round(UNIX_TIMESTAMP(tmp_log.time) div (15 * 60)) * (15 * 60) , '%H:%i') AS time FROM tmp_log";

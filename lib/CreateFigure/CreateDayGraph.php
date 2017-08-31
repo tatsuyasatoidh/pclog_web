@@ -2,7 +2,6 @@
 require_once ""
 class CreateDayGraph extends CreateGraph
 {
-    
     /* 15分グラフ */
     public function fifteenthMin($val)
     {

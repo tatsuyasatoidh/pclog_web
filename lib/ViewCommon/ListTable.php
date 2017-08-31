@@ -6,6 +6,7 @@ class ListTable{
 	public $ConnectMysql;
 	
 	function pcLogList($val){
+      var_dump($val);
       $PclogDao = new PclogDao();
       
     if(!($val["company"] == null and $val["user"]==null and $val["start_date"]==null and $val["end_date"]==null)){
@@ -27,9 +28,9 @@ class ListTable{
                 echo "</tr>";
             
 			foreach($result as $row){
-                $funcPath="/lib/Controller/Download/getLogCsv.php";
-                $path="log/".h($row['company_name'])."/".h($row['user_name'])."/".date('Ymd',strtotime(h($row['date'])));
-                $href=$funcPath."/?log_path=".$path;
+        $funcPath="/lib/Controller/Download/getLogCsv.php";
+        $path="log/".h($row['company_id'])."/".h($row['user_id'])."/log_".date('Ymd',strtotime(h($row['date'])));
+        $href=$funcPath."/?log_path=".$path;
 				$tr_count++;
 				echo "<tr>";
 				echo "<td>".$tr_count."</td>";

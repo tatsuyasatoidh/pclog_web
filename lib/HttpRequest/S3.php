@@ -29,7 +29,7 @@ class S3Request{
         //sdk設定   
         $sdk = new Aws\Sdk([
             'region'   => 'us-west-2',
-            'version'  => '2006-03-01',
+            'version'  => 'latest',
             'credentials' => array(
             'key' => 'AKIAJMFK3V5OXYQET64A',
             'secret'  => '5mBXv/jmmqulsAbShnUwrF+fOgoMAVi4OAF/bw2v',
@@ -48,7 +48,6 @@ class S3Request{
         $key_name = str_replace('/','_',$key_name);
         $filename =  $_SERVER ['DOCUMENT_ROOT'].'/tmp/file/'.$key_name.".csv";
         $filename = str_replace('.csv.csv','.csv',$filename);
-
         if(!file_exists($_SERVER ['DOCUMENT_ROOT'].'/tmp')){
             mkdir($_SERVER ['DOCUMENT_ROOT'].'/tmp', 0755, true);
         }

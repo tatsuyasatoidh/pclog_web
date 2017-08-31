@@ -1,7 +1,7 @@
 <?php
 require_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Common/autoloader.php';
 
-class formController
+class FormPost
 {
     private $userDao;
     private $companyDao;
@@ -14,20 +14,20 @@ class formController
     
     public function getUserOption()
     {
-        $result = $this->userDao->get();
+        $result = $this->userDao->getUserName();
         $option="";
         foreach($result as $row){
-            $option.="<option value=".$row['id'].">".$row['user_name']."</option>";
+            $option.="<option>".$row['user_name']."</option>";
         }
         return $option;
     }
     
     public function getCompanyOption()
     {
-        $result = $this->companyDao->get();
+        $result = $this->companyDao->getCompanyName();
         $option="";
         foreach($result as $row){
-            $option.="<option value=".$row['id'].">".$row['company_name']."</option>";
+            $option.="<option>".$row['company_name']."</option>";
         }
         return $option;
     }

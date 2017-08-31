@@ -75,6 +75,7 @@ class CreateGraph extends ParentController{
     /* 15分グラフ */
     public function fifteenthMin($val)
     {
+        var_dump($val);
         $this->setVal($val['date'], $val['company'], $val['user'],"15m");
         $result = $this->create();
         if(!$result){

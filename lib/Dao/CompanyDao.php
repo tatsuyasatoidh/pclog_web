@@ -3,10 +3,10 @@ include_once dirname(__FILE__).'/../Common/AbstractDao.php';
 
 class CompanyDao extends AbstractDao {
 
-    public function getCompanyName()
+    public function get()
     {
         try {
-                $qy = " SELECT company_name FROM pclog.company ";
+                $qy = " SELECT * FROM pclog.company ";
                 $result=parent::commitStmt($qy);
                 return $result;
             } catch ( Exception $e ) {

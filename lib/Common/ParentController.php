@@ -8,7 +8,6 @@ class ParentController{
 	}
 	protected function setInfoLog($message) {
         $dbug = debug_backtrace();
-        //var_dump("<pre>"."file :".$dbug[0]['file']." line :".$dbug[0]['line']." "." function :".$dbug[1]['function']." <br>".$message."</pre>");
 	}
 	protected function setErrorLog($message) {
 		$this->logger->error ( $message );

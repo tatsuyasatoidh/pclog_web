@@ -8,9 +8,9 @@ class Download extends ParentController{
     
     /*s3からファイルをダウンロード*/
     public function getLogCsv($path){
-        $path .=".csv"; 
-        $path = str_replace('.csv.csv','.csv',$path);
         try{
+            $path .=".csv"; 
+            $path = str_replace('.csv.csv','.csv',$path);
             parent::setInfoLog($path);
             $s3Manage = new S3Request();
             #ローカルに取得
@@ -27,9 +27,10 @@ class Download extends ParentController{
     
     /*ファイルをローカルにダウンロード**/
     public function toLocal($File){
+        parent::setInfoLog("toLocal start");
         /* File Read */
         $read_data = file_get_contents($File);
-        $fileName = str_replace('/','_',$_GET['log_path']).".csv";
+        $fileName = $_GET['log_path'].".csv";
         $fileName = str_replace('.csv.csv','.csv',$fileName);
         /* Output HTTP Header */
         header('Content-Disposition: inline; filename="'.$fileName.'"');

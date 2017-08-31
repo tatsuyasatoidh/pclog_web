@@ -50,16 +50,21 @@ if(isset($_POST['submit'])){
 						<div class="panel panel-primary">
 								<div class="panel-heading">
 										<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>検索</h3>
-								</div>
-								<div>
-										<form method="post">
-												<label>企業名</label><input type="text" name="company" id="company">
-												<label for="user" >ユーザー</label><input type="text" name="user" id="user">
-												<label>年月日</label><input type="date" name="start_date" id="start_date">
-												<label>年月日</label><input type="date" name="end_date" id="end_date">
-												<button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
-										</form>
-								</div>
+								</div>        
+<?php
+/*フォームの作成*/
+$formController = new formController();
+$userOption=$formController->getUserOption();
+$companyOption=$formController->getCompanyOption();
+?><div>
+    <form method="post">
+        <label>企業名</label><select name="company" id="company" required style="height: 40px;"><?= $companyOption;?></select>
+        <label for="user" >ユーザー</label><select name="user" id="user" required style="height: 40px;"><?= $userOption;?></select>
+        <label>年月日</label><input type="date" name="start_date" id="start_date">
+        <label>年月日</label><input type="date" name="end_date" id="end_date">
+        <button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
+    </form>
+</div>
 						</div>
 		<div class="panel panel-primary">
 				<div class="panel-heading">
