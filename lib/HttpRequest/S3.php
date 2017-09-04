@@ -20,7 +20,6 @@ class S3Request{
         ]);
     }
     
-    
     /*
      * s3からファイルをダウンロードして、/tmpディレクトリに吐き出す。
      * @return string 出力したファイルパス 
@@ -36,6 +35,7 @@ class S3Request{
             )
         ]);
         
+
         // SDK内のＳ３クラスを使用
         $s3Client = $sdk->createS3();
         // Download
@@ -57,9 +57,11 @@ class S3Request{
         if(!file_exists($filename)){
             touch($filename);
         }
-        
+        $length = $result['ContentLength'];
+        $result['Body']->rewind();
+        $data = $result['Body']->read($length);
         // ファイルに書き込む
-        file_put_contents($filename, $result['Body']);
+        file_put_contents($filename, $data);
 
         // ファイルを出力する
         //readfile($filename);
