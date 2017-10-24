@@ -1,0 +1,7 @@
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :34  function :getUserNameByEmailAndPassword <br>commit Sql :  SELECT user_name FROM pclog.user WHERE mail_address ='tatsuya@gmail.com' AND password ='idh'
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :34  function :getUserNameByEmailAndPassword <br>commit Sql :  SELECT user_name FROM pclog.user WHERE mail_address ='tatsuya@gmail.com' AND password ='idh'
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :34  function :getUserNameByEmailAndPassword <br>commit Sql :  SELECT user_name FROM pclog.user WHERE mail_address ='tatsuya@gmail.com' AND password ='idh'
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :34  function :getUserNameByEmailAndPassword <br>commit Sql :  SELECT user_name FROM pclog.user WHERE mail_address ='tatsuya@gmail.com' AND password ='idh'
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :39  function :getUserNameByEmailAndPassword <br>Sql result : satou.tatsuya
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :34  function :getUserNameByEmailAndPassword <br>commit Sql :  SELECT user_name FROM pclog.user WHERE mail_address ='tatsuya@gmail.com' AND password ='idh'
+□file :C:\xampp\htdocs\pclog\lib\Dao\UserDao.php line :39  function :getUserNameByEmailAndPassword <br>Sql result : satou.tatsuya
