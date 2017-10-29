@@ -7,19 +7,18 @@ use lib\Dao\ParentDao as ParentDao;
 
 class UserDao extends ParentDao{
 
-    public function get()
-    {
-    try {
-            $qy = " SELECT * FROM pclog.user ";
-            $result=parent::commitStmt($qy);
-            return $result;
-        } catch ( Exception $e ) {
-           echo $e;
-           die ( $e );
-        } finally {
-
-        }
-    }
+		public function get()
+		{
+			try {
+				$qy = " SELECT * FROM pclog.user ";
+				$result=parent::commitStmt($qy);
+			} catch ( Exception $e ) {
+				echo $e;
+				die ( $e );
+			} finally {
+				return $result;
+			}
+		}
 	
 	/**
 	* userIdを使用してレコードを取得する
@@ -47,7 +46,7 @@ class UserDao extends ParentDao{
      * @return string 操作ユーザー名
 	 **/
 	public function getIdByEmailAndPassword($email,$passWord)
-    {
+  {
     try {
             $result = false;
             $qy = " SELECT id FROM pclog.user WHERE mail_address ='${email}' AND password ='${passWord}'";

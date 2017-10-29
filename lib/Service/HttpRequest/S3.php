@@ -25,9 +25,11 @@ class S3Request extends ParentController
     
     /*
      * s3からファイルをダウンロードして、/tmpディレクトリに吐き出す。
+		 * @param string $localPath ダウンロードをしたファイルを出力するパス
+		 * @param string $key_name キー名
      * @return string 出力したファイルパス 
      */
-    public function getFile($key_name){
+    public function getFile($localPath,$key_name){
 		
 		parent::setInfoLog("getFile START");
 		
@@ -51,24 +53,21 @@ class S3Request extends ParentController
         
         /*s3からもってきたファイルをサーバーに出力する*/
         $key_name = str_replace('/','_',$key_name);
-        $filename =  $_SERVER ['DOCUMENT_ROOT'].'/tmp/file/'.$key_name.".csv";
-        $filename = str_replace('.csv.csv','.csv',$filename);
-		
-        if(!file_exists($_SERVER ['DOCUMENT_ROOT'].'/tmp/file/')){
-            mkdir($_SERVER ['DOCUMENT_ROOT'].'/tmp/file/', 0755, true);
+      
+        if(!file_exists($localPath)){
+            mkdir($localPath, 0755, true);
         }
-        if(!file_exists($filename)){
-            touch($filename);
+        if(!file_exists($localPath)){
+            touch($localPath);
         }
         $length = $result['ContentLength'];
         $result['Body']->rewind();
         $data = $result['Body']->read($length);
         // ファイルに書き込む
-        file_put_contents($filename, $data);
+        file_put_contents($localPath, $data);
+				parent::setInfoLog("getFile END");
         #ファイルパスを返す
-        return $filename;
-		
-		parent::setInfoLog("getFile END");
+        return $localPath;
     }
 }
 ?>

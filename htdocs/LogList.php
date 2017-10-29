@@ -1,7 +1,5 @@
 <?php 
 ini_set( 'display_errors', 1 );
-require_once('lib/ViewCommon/ValueCheck.php');
-
 class_exists('lib\Controller\Form\FormController') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Controller/Form/FormController.php';
 class_exists('lib\Controller\LogListController') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Controller/LogListController.php';
 

@@ -24,7 +24,6 @@ class ParentDao {
     }
     protected function commitStmt($qy) {
 			$this->db = new DbConnection ();
-			$this->setInfoLog($qy);
 			return $this->db->query($qy);
     }
     protected function close() {

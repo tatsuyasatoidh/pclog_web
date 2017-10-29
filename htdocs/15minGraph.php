@@ -21,7 +21,7 @@
     </div>
 </div>
 <script>
-var $hourjsondata ='<?= json_encode($CreateGraph->getResult());?>';
+var $hourjsondata ='<?= json_encode($Graph->getResult());?>';
 var $hourdata =JSON.parse($hourjsondata);
 var $workdata = $hourdata["work"];
 var $timedata = $hourdata["time"];

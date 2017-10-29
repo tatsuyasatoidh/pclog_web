@@ -15,15 +15,13 @@ use lib\Dao\TmpLogDao as TmpLogDao;
 use lib\Service\HttpRequest\Download as DownLoad;
 use lib\Service\FileManage as FileManage;
 
-class CreateGraph extends ParentController{
+class Graph extends ParentController{
 	
 	private $Ymd;
 	private $user;
 	private $company;
 	private $interval;
 	private $result;
-	/** s3上ログファイルパス key*/
-	private $s3KeyPath = "log/"; 
 	
 	/** エラーメッセージ*/
 	private $errorMessage = [];
@@ -58,21 +56,10 @@ class CreateGraph extends ParentController{
 				$fileManage = new FileManage();
 				/** 一時テーブルDaoインスタンス*/
 				$TmpLogDao = new TmpLogDao();
-				
 				/** 入力値を暮らす変数にセット*/
 				$this->setVal($post);
 				
-				if (@$_SERVER["SERVER_NAME"] === 'localhost') {
-					/** 開発用*/
-					$csvFile ="/tmp/PcLogTool/log/11/29/log_20171012.csv";
-				}else{
-					/** s3からファイルの読み込み*/
-					$csvFile = $this->getLog($this->company,$this->user,$this->Ymd);
-				}
-				/** ファイルの取り出しに失敗した場合、エラーを投げる*/
-				if(!$csvFile){
-					throw new exception("ログファイルの取得に失敗しました。");
-				}
+
 			  /** csvから配列を作成*/
 				$csvArray = $fileManage->csvToArray($csvFile);
 			  /** 一時テーブルから検索日とユーザー名の組み合わせのものを削除。*/
@@ -118,23 +105,6 @@ class CreateGraph extends ParentController{
 			}
 			
     }
-	
-	private function getLog($company,$user,$Ymd)
-	{
-		try{
-			parent::setInfoLog("getLog START");
-			$downLoad = new DownLoad();
-			parent::setInfoLog("s3 key is $this->s3KeyPath");
-			/** keyを使いs3からファイルを取り出す。*/
-			$csvFile = $downLoad->getFromS3($this->s3KeyPath);
-		}catch(Exception $e){
-			
-		}finally{
-			parent::setInfoLog("getLog END");
-		}
-	
-		return $csvFile;
-	}
 	
 	
     public function getResult()

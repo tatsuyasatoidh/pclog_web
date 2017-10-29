@@ -2,10 +2,12 @@
 namespace lib\Controller;
 
 class_exists('lib\Controller\Form\FormController') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Controller/Form/FormController.php';
-class_exists('lib\Service\\CreateGraph') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Service/CreateGraph.php';
+class_exists('lib\Service\Graph') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Service/Graph.php';
+class_exists('lib\Service\OperationLog') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Service/OperationLog.php';
 
 use lib\Controller\Form\FormController as FormController;
-use lib\Service\CreateGraph as CreateGraph;
+use lib\Service\Graph as Graph;
+use lib\Service\OperationLog as OperationLog;
 
 /**
  * 日別グラフコントローラ
@@ -39,9 +41,17 @@ class DailyGraphController
 					$result = false;
 					if($val){
 						/** グラフ作成クラスのインスタンス*/
-						$createGraph = new CreateGraph();
-						/** 引数を渡してグラフの作成*/
-						$result = $createGraph->create($val);
+						$createGraph = new Graph();
+						/** 操作ログクラスのインスタンス*/
+						$operationLog = new OperationLog($val["user"],$val["date"]);
+						/** 操作ログをS３からダウンロード*/
+						$logFileLocal = $operationLog->getLogFromS3();
+						/** グラフタイプ用に合わせて配列を作成して結果をMysqlテーブルに保持する*/
+						$operationLog->InsertLogIntoMysql($logFileLocal);
+						/**　グラフタイプを確認して、MYsqlからサマリを取得*/
+						$logFile_graph = $operationLog->getSummary($val["type"]);
+						/** ファイルから、グラフを作成する*/
+					//	$result = $createGraph->create($val);
 					}
 				}catch(exception $e){
 					

@@ -1,9 +1,9 @@
 <?php
 
 include_once dirname(__FILE__)."/../Dao/TmpLogDao.php" ; 
-include_once dirname(__FILE__)."/CreateGraph.php";
+include_once dirname(__FILE__)."/Graph.php";
 
-class Create15minGraph extends CreateGraph{
+class Create15minGraph extends Graph{
     private $Ymd;
     private $user;
     private $company;

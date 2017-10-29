@@ -6,7 +6,6 @@ date_default_timezone_set ( "Asia/Tokyo" );
 class_exists('lib\Log\LogWriter') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Log/LogWriter.php';
 
 use lib\Log\LogWriter as LogWriter;
-
 class ParentController
 {	
 	private $logger;
@@ -38,4 +37,5 @@ class ParentController
 		$str = str_replace($appendStr.$appendStr,$appendStr,$str);
 		return $str;
 	}
+
 }

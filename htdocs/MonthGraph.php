@@ -1,8 +1,8 @@
 <?php
-require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/CreateFigure/CreateGraph.php';
+require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/CreateFigure/Graph.php';
 require 'lib/ViewCommon/ValueCheck.php';
 class_exists('lib\Controller\Form\FormController') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Controller/Form/FormController.php';
-$CreateGraph= new CreateGraph();	
+$Graph= new Graph();	
 
 use lib\Controller\Form\FormController as FormController;
 ?>
@@ -63,9 +63,9 @@ use lib\Controller\Form\FormController as FormController;
 	</div>
 	</div>
 <?php if(isset($_POST['submit'])):
-    if($CreateGraph->monthGraph($_POST)):?>
+    if($Graph->monthGraph($_POST)):?>
     <script>
-    var $monthjsondata ='<?= json_encode($CreateGraph->getResult());?>';
+    var $monthjsondata ='<?= json_encode($Graph->getResult());?>';
     var $monthdata =JSON.parse($monthjsondata);
     var $workdata = $monthdata["work"];
     var $datetime = $monthdata["date"];

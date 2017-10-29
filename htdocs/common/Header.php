@@ -17,13 +17,13 @@ $loginUserName = $loginUser->getUserName();
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="LogList.php">PcLogTool</a>
+				<a class="navbar-brand" href="/htdocs/LogList.php">PcLogTool</a>
 		</div>
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 				<ul class="nav navbar-nav navbar-right navbar-user">
-											<li><a href="LogList.php"><i class="fa fa-bullseye"></i> Dashboard</a></li>
-						<li><a href="htdocs/DailyGraph.php"><i class="fa fa-tasks"></i> DailyGraph</a></li>
-						<li><a href="htdocs/MonthGraph.php"><i class="fa fa-tasks"></i> MonthGraph</a></li>
+						<li><a href="/htdocs/LogList.php"><i class="fa fa-bullseye"></i> Dashboard</a></li>
+						<li><a href="/htdocs/DailyGraph.php"><i class="fa fa-tasks"></i> DailyGraph</a></li>
+						<li><a href="/htdocs/MonthGraph.php"><i class="fa fa-tasks"></i> MonthGraph</a></li>
 						 <li class="dropdown user-dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?= $loginUser->getUserName();?><b class="caret"></b></a>
 								<ul class="dropdown-menu">

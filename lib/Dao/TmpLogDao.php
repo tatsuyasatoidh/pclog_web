@@ -28,16 +28,30 @@ class TmpLogDao extends ParentDao {
     /*
     * csvファイルからデータをmysqlテーブルにデータを格納する
     */
-	public function loadData($csvFile){
-		try{
-				$qy="LOAD DATA LOCAL INFILE '$csvFile' INTO TABLE tmp_log FIELDS TERMINATED BY ','";
+	public function InsertLog($array){
+		for($i=0;$i<count($array);$i++)
+		{
+			$userName =(($array[$i]["user_name"]));
+			$date =(($array[$i]["date"]));
+			$time =(($array[$i]["time"]));
+			$work =1;
+
+			$qy=
+				'INSERT INTO pclog.tmp_log(
+				`user_name`,
+				`date`,
+				`time`,
+				`work`
+				)VALUES (
+				"'.$userName.'", 
+				"'.$date.'", 
+				"'.$time.'",
+				"'.$work.'"
+				)';
 				$result=parent::commitStmt($qy);
-		}catch(Exception $e){
-				parent::setInfoLog(" FAiled to loadData".$e->getMessage());
-		} finally {
-			return $result;
-		}
-	}  
+			}
+		return $result;
+	   }  
     
     
    public function getSumWorks($user, $date, $interval){
@@ -45,22 +59,23 @@ class TmpLogDao extends ParentDao {
 				parent::setInfoLog("getSumWorks START");
 				$result ="";
 				$resultArray="";
-				if($interval=='15m'){
+				if($interval=='15'){
 				#15分
 				$qy="SELECT SUM(work) AS work ,FROM_UNIXTIME(round(UNIX_TIMESTAMP(tmp_log.time) div (15 * 60)) * (15 * 60) , '%H:%i') AS time FROM tmp_log";
 				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY time";
 
-				}elseif($interval=='30m'){
+				}elseif($interval=='30'){
 
 				#30分
 				$qy="SELECT SUM(work)AS work,FROM_UNIXTIME(round(UNIX_TIMESTAMP(tmp_log.time) div (30 * 60)) * (30 * 60) , '%H:%i') AS time FROM tmp_log";
 				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY time";    
 
-				}elseif($interval=='1h'){  
+				}elseif($interval=='1'){  
 				#1h
 				$qy="SELECT DATE_FORMAT(tmp_log.time, '%H:00') AS time, SUM(work)AS work FROM tmp_log";
 				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY DATE_FORMAT(tmp_log.time, '%H')";
 				}
+			 	var_dump($qy);
 				$result=parent::commitStmt($qy);
 				$i=0;
 

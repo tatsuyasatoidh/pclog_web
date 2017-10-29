@@ -3,9 +3,9 @@
 include_once "../mysql/TmpLogDao.php" ; 
 include_once "../CommonData.php" ; 
  
-include_once dirname(__FILE__)."/CreateGraph.php";
+include_once dirname(__FILE__)."/Graph.php";
 
-class Create30minGraph extends CreateGraph{
+class Create30minGraph extends Graph{
 	
 	function create($val){
       

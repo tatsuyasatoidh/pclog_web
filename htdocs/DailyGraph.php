@@ -19,10 +19,10 @@ $graph = $dailyGraphController->createGraph($_POST);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>時間帯別日間作業量＿PcLogTool</title>
 
-    <link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="../font-awesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" type="text/css" href="../css/local.css" />
-    <link rel="stylesheet" type="text/css" href="../css/add.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/local.css" />
+    <link rel="stylesheet" type="text/css" href="css/add.css" />
 
     <script type="text/javascript" src="js/jquery.js"></script> 
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>

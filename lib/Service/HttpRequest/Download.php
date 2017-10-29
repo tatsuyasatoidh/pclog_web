@@ -26,12 +26,12 @@ class Download extends ParentController{
     }
 	
 	/** S3からファイルをダウンロードする処理*/
-	public function getFromS3($path)
+	public function getFromS3($localPath,$path)
 	{
 		parent::setInfoLog("getFromS3 START");
 		$s3Manage = new S3Request();
 		parent::setInfoLog("getFromS3 END");
 		#ローカルに取得
-		return $s3Manage->getFile($path);
+		return $s3Manage->getFile($localPath,$path);
 	}
 }

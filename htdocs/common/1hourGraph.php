@@ -10,9 +10,9 @@
         </div>
     </div>
 </div>
-<?php if($CreateGraph->hourhMin($_POST)):?>
+<?php if($Graph->hourhMin($_POST)):?>
     <script>
-    var $fifteenthjsondata ='<?= json_encode($CreateGraph->getResult());?>';
+    var $fifteenthjsondata ='<?= json_encode($Graph->getResult());?>';
     var $fifteenthdata =JSON.parse($fifteenthjsondata);
     var $workdata = $fifteenthdata["work"];
     var $timedata = $fifteenthdata["time"];
@@ -58,7 +58,7 @@
 <?php endif;?>
 <script>
 /* 検索日の総作業量 */
-var $total_work = <?= $CreateGraph->getTotalWork();?>;
-$("#total_work").text("<?= $CreateGraph->getTotalWork();?>");
+var $total_work = <?= $Graph->getTotalWork();?>;
+$("#total_work").text("<?= $Graph->getTotalWork();?>");
 </script>    
    
