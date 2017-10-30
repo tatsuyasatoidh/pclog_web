@@ -10,6 +10,7 @@ use lib\Controller\ParentController as ParentController;
 class S3Request extends ParentController
 {
 	const bucket_name = 'elasticbeanstalk-us-west-2-443316351375';
+	const SECRET = '5mBXv/jmmqulsAbShnUwrF+fOgoMAVi4OAF/bw2v';
     
     public function __construct(){
     }
@@ -32,14 +33,14 @@ class S3Request extends ParentController
     public function getFile($localPath,$key_name){
 		
 		parent::setInfoLog("getFile START");
-		
+		parent::setInfoLog("key is :$localPath");
         //sdk設定   
         $sdk = new \Aws\Sdk([
             'region'   => 'us-west-2',
             'version'  => 'latest',
             'credentials' => array(
             'key' => 'AKIAJMFK3V5OXYQET64A',
-            'secret'  => '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',
+            'secret'  => self::SECRET,
             )
         ]);
         

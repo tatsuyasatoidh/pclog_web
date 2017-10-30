@@ -18,18 +18,23 @@ use lib\Entity\User as User;
  * @access public
  */
 class OperationLog extends ParentController{
-	
+	const LOGDIR = "/var/Pclogtool/log";
 	private $operationLogArray = [];
-	private $logPath_local = "/var/Pclogtool/log";
+	private $logFileName;
+	private $logPath_local;
+	private $logFullPath_local;
+	private $logPath_local_15 = "/15Unit";
+	private $logPath_local_30 = "/30Unit";
+	private $logPath_local_60 = "/60Unit";
 	/** s3上ログファイルパス key*/
 	private $logPath_s3KeyPath = "log/"; 
-	
 	/** インスタンス*/
 	private $downLoad;
 	private $tmpLogDao;
 	
 	private $userId;
 	private $userName;
+	private $companyId;
 	private $searchDate;
 	
 	/**
@@ -38,14 +43,20 @@ class OperationLog extends ParentController{
 	 **/
 	public function __construct($userId=NULL,$searchDate = NULL)
 	{
-		$this->userEntity = new User($userId);
-		$this->userName = $this->userEntity->getUserName();
-		$this->userId = $userId;
-		$this->searchDate = $searchDate;
-		/** userIdからNameを取得*/
-		
+		/** インスタンス*/
 		$this->downLoad = new DownLoad();
 		$this->tmpLogDao = new TmpLogDao();
+		$this->userEntity = new User($userId);
+		/** クラス変数を設定*/	
+		$this->userName = $this->userEntity->getUserName();
+		$this->companyId = $this->userEntity->getCompanyId();
+		$this->userId = $userId;
+		$this->searchDate = date('Ymd', strtotime($searchDate));
+		/** ログ名を生成*/
+		$this->logFileName = "log_".$this->searchDate.".csv";
+		$this->logPath_local = "$this->companyId/$this->userId/$this->logFileName";
+		$this->logFullPath_local = self::LOGDIR."/$this->logPath_local";
+		var_dump($this->logFullPath_local);
 	}
 	
 	/**
@@ -60,49 +71,32 @@ class OperationLog extends ParentController{
 	/**
 	 * s3から指定のログを取得する関数
 	 * @access public 
+	 * @return string ログパス
 	 **/
 	public function getLogFromS3()
 	{
 		try{
 			parent::setInfoLog("getLogFromS3 START");
-			parent::setInfoLog("s3 key is $this->logPath_s3KeyPath");
 			if (@$_SERVER["SERVER_NAME"] === 'localhost') {
 				/** 開発用*/
-				$this->logPath_local = $this->logPath_local."/11/29/log_20171012.csv";
+				//$this->logFullPath_local = $this->logFullPath_local."/11/29/log_20171012.csv";
 			}else{
 				/** keyを使いs3からファイルを取り出す。*/
-				$this->logPath_local = $this->downLoad->getFromS3($this->logPath_local,$this->logPath_s3KeyPath);
+				$this->logPath_s3KeyPath = $this->logPath_s3KeyPath."/".$this->logPath_local;
+				parent::setInfoLog("s3 key is $this->logPath_s3KeyPath");
+				$this->logFullPath_local = $this->downLoad->getFromS3($this->logFullPath_local,$this->logPath_s3KeyPath);
+				parent::setInfoLog("get file is $this->logFullPath_local");
 			}
 			/** ファイルの取り出しに失敗した場合、エラーを投げる*/
-			if(!file_exists($this->logPath_local)){
-				throw new \exception($this->logPath_local."ログファイルの取得に失敗しました。");
+			if(!file_exists($this->logFullPath_local)){
+				throw new \exception($this->logFullPath_local."ログファイルの取得に失敗しました。");
 			}
 		}catch(\Exception $e){
 			parent::setInfoLog($e->getMessage());
 		}finally{
 			parent::setInfoLog("getLogFromS3 END");
 		}
-		return $this->logPath_local;
-	}
-	
-	/**
-	 * 指定の時間ごとにサマリーを作成
-	 * @access public 
-	 **/
-	public function summaryLog($type)
-	{
-		$logArray = $this->csvToArray($this->logPath_local);
-		$this->_dateBy15Minutes($logArray);
-		exit;
-		switch ($type)
-		{
-			case 15:
-				var_dump("15分");
-				break;
-			case 30:
-			default:
-				break;
-		}
+		return $this->logFullPath_local;
 	}
 	
 	 /*
@@ -112,8 +106,10 @@ class OperationLog extends ParentController{
 	public function csvToArray($csvFile){
 		try{
 				parent::setInfoLog("csvToArray START");
-				parent::setInfoLog("csvFile is $csvFile");
-
+			var_dump($csvFile);
+				if(!file_exists($csvFile)){
+					throw new \Exception("$csvFile is not exist;");
+				}
 				$csvArray  = array();
 				$fp   = fopen($csvFile, "r");
 				$count =0;
@@ -147,12 +143,41 @@ class OperationLog extends ParentController{
 		$this->tmpLogDao->InsertLog($logArray);
 	}
 	
+	/** 
+	 * グラフ作成用のファイルのgetter
+	 * @param string $type グラフのタイプ
+	 */
+	public function getLog($type)
+	{
+		$sumamry = $this->getSummary($type);
+		var_dump($this->logFullPath_local_."".$type);
+		exit;
+		
+	}
+	
 	/**
 	 * Mysqlから指定の時間のサマリを取得しファイルに保管する
 	 **/
-	 public function getSummary($type) {
+	 public function getSummary($type) 
+	 {
 		 $smmary = $this->tmpLogDao->getSumWorks($this->userName, $this->searchDate, $type);
 		 return $smmary;
 	 }
+	
+	public function arrayToCsvFile($array){
+		$file = fopen("test.csv", "w");
+		/* CSVファイルを配列へ */
+		if( $file ){
+		var_dump( fputcsv($file, $array) );
+		}
+
+		/* ファイルポインタをクローズ */
+		fclose($file);
+
+		foreach ($array as $fields){
+			fputcsv(STDOUT, $fields);
+		}
+	}
+	
 	
 }

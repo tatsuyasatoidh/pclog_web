@@ -29,29 +29,38 @@ class TmpLogDao extends ParentDao {
     * csvファイルからデータをmysqlテーブルにデータを格納する
     */
 	public function InsertLog($array){
-		for($i=0;$i<count($array);$i++)
-		{
-			$userName =(($array[$i]["user_name"]));
-			$date =(($array[$i]["date"]));
-			$time =(($array[$i]["time"]));
-			$work =1;
-
-			$qy=
-				'INSERT INTO pclog.tmp_log(
-				`user_name`,
-				`date`,
-				`time`,
-				`work`
-				)VALUES (
-				"'.$userName.'", 
-				"'.$date.'", 
-				"'.$time.'",
-				"'.$work.'"
-				)';
-				$result=parent::commitStmt($qy);
+		try{
+			if(!$array){
+				throw new \exception("not exist Array");
 			}
-		return $result;
-	   }  
+			for($i=0;$i<count($array);$i++)
+			{
+				$userName =(($array[$i]["user_name"]));
+				$date =(($array[$i]["date"]));
+				$time =(($array[$i]["time"]));
+				$work =1;
+
+				$qy=
+					'INSERT INTO pclog.tmp_log(
+					`user_name`,
+					`date`,
+					`time`,
+					`work`
+					)VALUES (
+					"'.$userName.'", 
+					"'.$date.'", 
+					"'.$time.'",
+					"'.$work.'"
+					)';
+					$result=parent::commitStmt($qy);
+			}
+		}catch(\Exception $e){
+			parent::setInfoLog($e->getMessage());
+			$result = false;
+		}finally{
+			return $result;
+		}
+}  
     
     
    public function getSumWorks($user, $date, $interval){
@@ -75,7 +84,6 @@ class TmpLogDao extends ParentDao {
 				$qy="SELECT DATE_FORMAT(tmp_log.time, '%H:00') AS time, SUM(work)AS work FROM tmp_log";
 				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY DATE_FORMAT(tmp_log.time, '%H')";
 				}
-			 	var_dump($qy);
 				$result=parent::commitStmt($qy);
 				$i=0;
 

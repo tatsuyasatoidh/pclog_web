@@ -46,15 +46,23 @@ class DailyGraphController
 						$operationLog = new OperationLog($val["user"],$val["date"]);
 						/** 操作ログをS３からダウンロード*/
 						$logFileLocal = $operationLog->getLogFromS3();
+						/** インサート失敗時はエラーを投げる*/
+						if(!file_exists($logFileLocal)){
+							throw new \exception("FAILED TO getLogFromS3()");
+						}
 						/** グラフタイプ用に合わせて配列を作成して結果をMysqlテーブルに保持する*/
-						$operationLog->InsertLogIntoMysql($logFileLocal);
+						$insertResult = $operationLog->InsertLogIntoMysql($logFileLocal);
+						/** インサート失敗時はエラーを投げる*/
+						if(!$insertResult){
+							throw new \exception("FAILED TO InsertLogIntoMysql()");
+						}
 						/**　グラフタイプを確認して、MYsqlからサマリを取得*/
-						$logFile_graph = $operationLog->getSummary($val["type"]);
+						$logFile_graph = $operationLog->getLog($val["type"]);
 						/** ファイルから、グラフを作成する*/
 					//	$result = $createGraph->create($val);
 					}
-				}catch(exception $e){
-					
+				}catch(\Exception $e){
+					var_dump($e->getMessage());
 				}finally{
 					return $result;
 				}

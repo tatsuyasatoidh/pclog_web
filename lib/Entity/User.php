@@ -23,6 +23,7 @@ class User {
 			{
 				$this->id = $value['id'];
 				$this->userName = $value['user_name'];
+				$this->companyId = $value['company_id'];
 			}
 		}
 	}
