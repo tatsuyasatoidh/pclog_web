@@ -16,80 +16,66 @@ class DailyGraphController
 {
 	/** エラーメッセージ*/
 	private $errorMessage = [];
+	private $graphInfo = [];
 	
-		/** ユーザー選択肢を表示する*/
-		public function displayUserOption()
-		{
-			$formController = new FormController();
-			return $formController->getUserOption();
-		}
+	private $graph;
 	
-		/** 企業名選択肢を表示する*/
-		public function displayCompanyOption()
-		{
-			$formController = new FormController();
-			return $formController->getCompanyOption();
-		}
+	public function __construct()
+	{
+		/** グラフ作成クラスのインスタンス*/
+		$this->graph = new Graph();
+	}
 	
-		/**
-		 * グラフを作成
-		 * @access public 
-		 **/
-		public function createGraph($val = null)
-		{
-				try{
-					$result = false;
-					if($val){
-						/** グラフ作成クラスのインスタンス*/
-						$createGraph = new Graph();
-						/** 操作ログクラスのインスタンス*/
-						$operationLog = new OperationLog($val["user"],$val["date"]);
-						/** 操作ログをS３からダウンロード*/
-						$logFileLocal = $operationLog->getLogFromS3();
-						/** インサート失敗時はエラーを投げる*/
-						if(!file_exists($logFileLocal)){
-							throw new \exception("FAILED TO getLogFromS3()");
-						}
-						/** グラフタイプ用に合わせて配列を作成して結果をMysqlテーブルに保持する*/
-						$insertResult = $operationLog->InsertLogIntoMysql($logFileLocal);
-						/** インサート失敗時はエラーを投げる*/
-						if(!$insertResult){
-							throw new \exception("FAILED TO InsertLogIntoMysql()");
-						}
-						/**　グラフタイプを確認して、MYsqlからサマリを取得*/
-						$logFile_graph = $operationLog->getLog($val["type"]);
-						/** ファイルから、グラフを作成する*/
-					//	$result = $createGraph->create($val);
+	/** ユーザー選択肢を表示する*/
+	public function displayUserOption()
+	{
+		$formController = new FormController();
+		return $formController->getUserOption();
+	}
+
+	/** 企業名選択肢を表示する*/
+	public function displayCompanyOption()
+	{
+		$formController = new FormController();
+		return $formController->getCompanyOption();
+	}
+	
+	/**
+	 * グラフを作成
+	 * @access public 
+	 **/
+	public function createGraph($val = null)
+	{
+			try{
+				$result = false;
+				if($val){
+					$result = $this->graph->create($val["company"],$val["user"],$val["date"],$val["type"]);
+					/** 結果がfalseの場合は*/
+					if(!$result){
+						throw new \exception("該当データがありません。");
 					}
-				}catch(\Exception $e){
-					var_dump($e->getMessage());
-				}finally{
-					return $result;
+					$result = true;
 				}
-			
+			}catch(\Exception $e){
+				$result = false;
+				var_dump($e->getMessage());
+			}finally{
+				return $result;
+			}	
 		}
-    
-    /* 30分グラフ */
-    public function thirtiethMin($val)
-    {
-        $this->setVal($val['date'], $val['company'], $val['user'],"30m");
-        $result = $this->create();
-        if(!$result){
-            return $this->dataNotAvailable();
-        }else{
-            return $result;
-        }
-    }
-    
-    /* 1時間グラフ */
-    public function hourhMin($val)
-    {
-        $this->setVal($val['date'], $val['company'], $val['user'],"1h");
-        $result = $this->create();
-        if(!$result){
-            return $this->dataNotAvailable();
-        }else{
-            return $result;
-        }
-    }
+	
+	/**
+	 * グラフ情報の配列を取得し返す関数
+	 **/
+	public function getGraphInfo()
+	{
+		return $this->graph->getGraphINfoPathArray();
+	}
+	
+	public function getwork()
+	{
+		return $this->graphInfo["work"];
+	}
+	
+	
 }

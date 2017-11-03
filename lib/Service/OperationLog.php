@@ -106,7 +106,7 @@ class OperationLog extends ParentController{
 	public function csvToArray($csvFile){
 		try{
 				parent::setInfoLog("csvToArray START");
-			var_dump($csvFile);
+				var_dump($csvFile);
 				if(!file_exists($csvFile)){
 					throw new \Exception("$csvFile is not exist;");
 				}

@@ -7,6 +7,7 @@ class_exists('lib\Dao\TmpLogDao') or require_once  $_SERVER['DOCUMENT_ROOT'].'/l
 class_exists("lib\Service\TemplateValue") or require_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Service/TemplateValue.php';
 class_exists("lib\Service\HttpRequest\Download") or require_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Service/HttpRequest/Download.php';
 class_exists("lib\Service\FileManage") or require_once $_SERVER ['DOCUMENT_ROOT'].'/lib/Service/FileManage.php';
+class_exists('lib\Service\OperationLog') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Service/OperationLog.php';
 
 use lib\Controller\ParentController as ParentController;
 use lib\Service\TemplateValue as TemplateValue;
@@ -14,14 +15,18 @@ use lib\Dao\PclogDao as PclogDao;
 use lib\Dao\TmpLogDao as TmpLogDao;
 use lib\Service\HttpRequest\Download as DownLoad;
 use lib\Service\FileManage as FileManage;
+use lib\Service\OperationLog as OperationLog;
 
 class Graph extends ParentController{
-	
+		
+	const LOGDIR = "/var/PclogTool/log";
 	private $Ymd;
 	private $user;
 	private $company;
 	private $interval;
 	private $result;
+	
+	private $GraphINfoPathArray =[];
 	
 	/** エラーメッセージ*/
 	private $errorMessage = [];
@@ -47,66 +52,72 @@ class Graph extends ParentController{
 		 * @access public
 		 * @param array $param 入力値
 		 **/
-    public function create($post)
+    public function create($companyId,$user,$date,$type)
     {
 			try{
-
-				parent::setInfoLog("create START"); 
-				/** ファイルマネージクラスのインスタンス*/
-				$fileManage = new FileManage();
-				/** 一時テーブルDaoインスタンス*/
-				$TmpLogDao = new TmpLogDao();
-				/** 入力値を暮らす変数にセット*/
-				$this->setVal($post);
+				parent::setInfoLog("create START");
+				$result = false;
+				$operationLog = new OperationLog();
+				$date = date('Ymd', strtotime($date));
+				$GraphINfoPath = self::LOGDIR."/".$type."unit/$companyId/$user/log_$date.csv";
 				
-
-			  /** csvから配列を作成*/
-				$csvArray = $fileManage->csvToArray($csvFile);
-			  /** 一時テーブルから検索日とユーザー名の組み合わせのものを削除。*/
-        $TmpLogDao->delete($this->user, $this->Ymd);
-				/** 配列の内容を一時テーブルに配列を保存。*/
-				$result=$TmpLogDao->loadData($csvFile);
-				if($result){
-					$seachVal=$TmpLogDao->getSumWorks($this->user, $this->Ymd, $this->interval);
-					if($seachVal){
-						#検索した日の作業量と比較し配列を作成
-						$dataPoints=$this->compareMysqlLog($tmplateVal,$seachVal);
-					}else{
-						$dataPoints=false;
-					}
+				if(file_exists($GraphINfoPath)){
+					/** グラフ作成用のファイルがすでに作成されている場合はそのファイルを使用してグラフを作成する*/
+					parent::setInfoLog("file exist $GraphINfoPath");
+					$this->GraphINfoPathArray = $this->getInfoFromCsv($GraphINfoPath);
+					$result = true;
 				}else{
-					$dataPoints=false;
-				}
-//			$TemplateValueArray = new TemplateValue($this->interval);
-//			$fileManage = new FileManage();
-//			$dataPoints = [];
-//        \:olk
-//        #一時テーブルから検索日とユーザー名の組み合わせのものを削除。
-//        $TmpLogDao->delete($this->user, $this->Ymd);
-//		/** s3からファイルの読み込み*/
-//		//$csvFile = $this->getLog($this->company,$this->user,$this->Ymd);
-//		$csvFile =dirname(__FILE__)."/log.csv";
-//        /** csvから配列を作成*/
-//		$csvArray = $fileManage->csvToArray($csvFile);
-//
-//		#配列の内容を一時テーブルに配列を保存。
-//		$result=$TmpLogDao->loadData($csvArray);
-//
-
-//		$this->result = $dataPoints;
-//		parent::setInfoLog("create END"); 
-//		return $dataPoints;
-				
-				
+					parent::setInfoLog("file exist $GraphINfoPath");
+					/** グラフがない場合はS3からログ*/
+					
+					$result = false;
+				}			
 			}catch(exception $e){
 				parent::setInfoLog($e->getMessage()); 
 			}finally{
 				parent::setInfoLog("create END");
+				return $result;
 			}
-			
     }
 	
+	 /*
+	 * csvファイルを配列にする
+	 * @param string csvファイルのパス
+	 * @return  array 配列
+	 */
+	public function getInfoFromCsv($csvFile){
+		try{
+					parent::setInfoLog("getInfoFromCsv START");
+					if(!file_exists($csvFile)){
+						throw new \Exception("$csvFile is not exist;");
+					}
+					$csvArray  = array();
+					$fp   = fopen($csvFile, "r");
+					$count =0;
+					while (($data = fgetcsv($fp, 0, ",")) !== FALSE) {
+						$csvArray["time"][$count] = $data[0];
+						$csvArray["work"][$count] = $data[1];
+						$count++;
+					}
+					fclose($fp);
+			}catch(\Exception $e){
+				parent::setInfoLog($e->getMessage());
+				$csvArray = null;
+			}finally{
+				parent::setInfoLog("getInfoFromCsv END");
+				return $csvArray;
+			}
+	}
 	
+	/** 
+	 * GraphINfoPathArrayのgetter
+	 * @access public 
+	 */
+	public function getGraphINfoPathArray()
+	{
+		return $this->GraphINfoPathArray;
+	}
+		
     public function getResult()
     {
         return $this->result;
@@ -116,43 +127,6 @@ class Graph extends ParentController{
     public function getTotalWork(){
         $result = $this->result;
         return array_sum($result['work']);
-    }
-    
-    /* 15分グラフ */
-    public function fifteenthMin($val)
-    {
-        var_dump($val);
-        $this->setVal($val['date'], $val['company'], $val['user'],"15m");
-        $result = $this->create();
-        if(!$result){
-            return $this->dataNotAvailable();
-        }else{
-            return $result;
-        }
-    }
-    
-    /** 30分グラフ */
-    public function thirtiethMin($val)
-    {
-        $this->setVal($val['date'], $val['company'], $val['user'],"30m");
-        $result = $this->create();
-        if(!$result){
-            return $this->dataNotAvailable();
-        }else{
-            return $result;
-        }
-    }
-    
-    /** 1時間グラフ */
-    public function hourhMin($val)
-    {
-        $this->setVal($val['date'], $val['company'], $val['user'],"1h");
-        $result = $this->create();
-        if(!$result){
-            return $this->dataNotAvailable();
-        }else{
-            return $result;
-        }
     }
     
     /* */
