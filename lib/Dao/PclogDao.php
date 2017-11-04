@@ -17,9 +17,9 @@ class PclogDao extends ParentDao{
 	function getAll(){
 		parent::setInfoLog("getAll START");
 		try {
-			$qy = " SELECT * FROM pclog ";
+			$qy = "  SELECT * FROM pclog ";
 			$qy .= " JOIN user ON pclog.user_id = user.id ";
-			$qy .= " JOIN company ON 1 = 1";
+			$qy .= " JOIN company ON user.company_id = company.id";
 			$qy .= " GROUP BY pclog.date,pclog.user_id,user.user_name,company.company_name";
 			$result=parent::commitStmt($qy);
 			parent::setInfoLog("commit Sql : $qy");

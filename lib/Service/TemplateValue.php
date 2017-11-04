@@ -5,24 +5,28 @@ class_exists('lib\Controller\ParentController') or require_once  $_SERVER['DOCUM
 
 class TemplateValue{
 
-    /* */
-    public function __construct($interval){
-        #全体のグラフのピースを用意
-        if($interval=="15m"){
-          $timedata=$this->Every15MinutesData();
-        }elseif($interval=="30m"){
-          $timedata=$this->Every30MinutesData();
-        }elseif($interval=="1h"){
-          $timedata=$this->EveryHoursData();
-        }else{
-          $timedata="";
-        }
-        return $timedata;
-    }
+	private $tempLog = [];
+	/* */
+	public function __construct($interval){
+			#全体のグラフのピースを用意
+			if($interval=="15"){
+				$this->tempLog=$this->Every15MinutesData();
+			}elseif($interval=="30"){
+				$this->tempLog=$this->Every30MinutesData();
+			}elseif($interval=="1"){
+				$this->tempLog=$this->EveryHoursData();
+			}else{
+				$this->tempLog="";
+			}
+	}
+	
+	public function getTempLog()
+	{
+		return $this->tempLog;
+	}
 	
 	#mysql tmp_logと比較
-	function compareMysqlLog($tmplateVal,$seachVal){
-
+	public function compareMysqlLog($tmplateVal,$seachVal){
 		for($count=0;$count<count($tmplateVal['time']);$count++){
 			
 			if(in_array($tmplateVal['time'][$count],$seachVal['time'])){
@@ -43,7 +47,7 @@ class TemplateValue{
   }
 		
 	#$val フォームの値（user_name,）
-	function monthGraph($val)
+	public function monthGraph($val)
   {
     $PclogDao = new PclogDao();
 		if(isset($val['month'])){

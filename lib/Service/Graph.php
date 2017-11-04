@@ -52,26 +52,41 @@ class Graph extends ParentController{
 		 * @access public
 		 * @param array $param 入力値
 		 **/
-    public function create($companyId,$user,$date,$type)
+    public function create($companyId,$userId,$date,$unitType)
     {
 			try{
 				parent::setInfoLog("create START");
 				$result = false;
-				$operationLog = new OperationLog();
-				$date = date('Ymd', strtotime($date));
-				$GraphINfoPath = self::LOGDIR."/".$type."unit/$companyId/$user/log_$date.csv";
-				
-				if(file_exists($GraphINfoPath)){
-					/** グラフ作成用のファイルがすでに作成されている場合はそのファイルを使用してグラフを作成する*/
-					parent::setInfoLog("file exist $GraphINfoPath");
+				/**　操作ログを扱うクラス */
+				$operationLog = new OperationLog($userId,$date);
+				/** 操作ログファイル（グラフ用）のパスを生成*/
+				$GraphINfoPath = $operationLog->getLocalLogPath($unitType);
+//				/** 操作ログファイル（グラフ用）のファイルがあるかを確認*/
+//				if(file_exists($GraphINfoPath)){
+//					/** グラフ作成用のファイルがすでに作成されている場合はそのファイルを使用してグラフを作成する*/
+//					parent::setInfoLog("file exist $GraphINfoPath");
+//					$this->GraphINfoPathArray = $this->getInfoFromCsv($GraphINfoPath);
+//				}else{
+					$this->tmpLogDao = new TmpLogDao($companyId,$userId,$date);
+					$TemplateValue = new TemplateValue($unitType);
+					/** グラフがない場合はS3からログを取得*/
+					$logs3Key = $operationLog->getS3LogPath();
+					/** 操作ログファイルを出力するパスを生成*/
+					$outputPath = $operationLog->getLocalLogPath();
+					/** ログファイルをS3から取得*/
+					$logPath = $operationLog->getLogFromS3($outputPath,$logs3Key);
+					/** ログファイルをmysqlに追加して操作*/
+					$this->tmpLogDao->createTable();
+					$this->tmpLogDao->loadDataCsv($logPath);
+					$sumaryWorkArray = $this->tmpLogDao->getSumWorks($unitType);
+					/** 時間単位別のテンプレートログを取得*/
+					$tmpArray = $TemplateValue->getTempLog();
+					/** テンプレートログとMYsqlから取り出したサマリーを照合*/
+					$sumaryWorkArray = $TemplateValue->compareMysqlLog($tmpArray,$sumaryWorkArray);
+					$GraphINfoPath = $operationLog->sumarryToCsvFile($sumaryWorkArray,$GraphINfoPath);
 					$this->GraphINfoPathArray = $this->getInfoFromCsv($GraphINfoPath);
-					$result = true;
-				}else{
-					parent::setInfoLog("file exist $GraphINfoPath");
-					/** グラフがない場合はS3からログ*/
-					
-					$result = false;
-				}			
+//				}
+				$result = true;
 			}catch(exception $e){
 				parent::setInfoLog($e->getMessage()); 
 			}finally{

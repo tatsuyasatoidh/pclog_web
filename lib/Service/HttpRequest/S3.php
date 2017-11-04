@@ -32,43 +32,46 @@ class S3Request extends ParentController
      */
     public function getFile($localPath,$key_name){
 		
-		parent::setInfoLog("getFile START");
-		parent::setInfoLog("key is :$localPath");
-        //sdk設定   
-        $sdk = new \Aws\Sdk([
-            'region'   => 'us-west-2',
-            'version'  => 'latest',
-            'credentials' => array(
-            'key' => 'AKIAJMFK3V5OXYQET64A',
-            'secret'  => self::SECRET,
-            )
-        ]);
-        
-        // SDK内のＳ３クラスを使用
-        $s3Client = $sdk->createS3();
-        // Download
-        $result = $s3Client->getObject([
-            'Bucket' => self::bucket_name,
-            'Key'    => $key_name
-        ]);
-        
-        /*s3からもってきたファイルをサーバーに出力する*/
-        $key_name = str_replace('/','_',$key_name);
-      
-        if(!file_exists($localPath)){
-            mkdir($localPath, 0755, true);
-        }
-        if(!file_exists($localPath)){
-            touch($localPath);
-        }
-        $length = $result['ContentLength'];
-        $result['Body']->rewind();
-        $data = $result['Body']->read($length);
-        // ファイルに書き込む
-        file_put_contents($localPath, $data);
-				parent::setInfoLog("getFile END");
-        #ファイルパスを返す
-        return $localPath;
+			parent::setInfoLog("getFile START");
+			parent::setInfoLog("key is :$key_name");
+			parent::setInfoLog("output path :$localPath");
+			//sdk設定   
+			$sdk = new \Aws\Sdk([
+				'region'   => 'us-west-2',
+				'version'  => 'latest',
+				'credentials' => array(
+				'key' => 'AKIAJMFK3V5OXYQET64A',
+				'secret'  => self::SECRET,
+			)
+			]);
+
+			// SDK内のＳ３クラスを使用
+			$s3Client = $sdk->createS3();
+			// Download
+			$result = $s3Client->getObject([
+				'Bucket' => self::bucket_name,
+				'Key'    => $key_name
+			]);
+
+			/*s3からもってきたファイルをサーバーに出力する*/
+			$key_name = str_replace('/','_',$key_name);
+
+			if(!file_exists($localPath)){
+				if(!file_exists(dirname($localPath))){
+					mkdir(dirname($localPath), 0777, true);
+				}
+			}
+			if(!file_exists($localPath)){
+				touch($localPath);
+			}
+			$length = $result['ContentLength'];
+			$result['Body']->rewind();
+			$data = $result['Body']->read($length);
+			// ファイルに書き込む
+			file_put_contents($localPath, $data);
+			parent::setInfoLog("getFile END");
+			#ファイルパスを返す
+			return $localPath;
     }
 }
 ?>

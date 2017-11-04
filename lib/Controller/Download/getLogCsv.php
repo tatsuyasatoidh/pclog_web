@@ -7,11 +7,14 @@ include_once $_SERVER ['DOCUMENT_ROOT']."/lib/Service/HttpRequest/Download.php";
 
 use lib\Service\HttpRequest\Download as Download;
 
-function getLogcsv($path)
+function getLogcsv($key)
 {
 	try{
 		$downLoadManage = new Download();
-		$downLoadManage->getFromS3($path);
+		$key = $key.".csv";
+		$outputPath = "/tmp/".$key;
+		$downLoadManage->getFromS3($outputPath,$key);
+		$downLoadManage->toLocal($outputPath);
 	}catch(Exception $e){
 		echo "s3からのダウンロードに失敗しました";
 	}

@@ -13,12 +13,11 @@ class Download extends ParentController{
     
     /*ファイルをローカルにダウンロード**/
     public function toLocal($File){
-		
         parent::setInfoLog("toLocal START");
         /* File Read */
         $read_data = file_get_contents($File);
         $fileName = basename($File);
-        $path =parent::appendStr($path,".csv");
+				echo $read_data;
         /* Output HTTP Header */
         header('Content-Disposition: inline; filename="'.$fileName.'"');
         header('Content-Type: application/octet-stream');

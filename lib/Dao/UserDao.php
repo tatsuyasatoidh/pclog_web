@@ -10,12 +10,14 @@ class UserDao extends ParentDao{
 		public function get()
 		{
 			try {
+				parent::setInfoLog("get START");
+				$result = "";
 				$qy = " SELECT * FROM pclog.user ";
 				$result=parent::commitStmt($qy);
 			} catch ( Exception $e ) {
 				echo $e;
-				die ( $e );
 			} finally {
+				parent::setInfoLog("get END");
 				return $result;
 			}
 		}

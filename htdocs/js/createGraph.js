@@ -94,7 +94,9 @@ function createcolorArray($workdata,$borderWorkCount)
 	var	$colorArray = [];
 	$workdata.forEach(function($val){
         var $colorData =(($val >= $borderWorkCount)?'#2fa4e7':'#c9c9c9');  
-		console.log($colorData);
+				console.log($val);
+				console.log($colorData);
+				console.log($val >= $borderWorkCount);
         $colorArray.push($colorData);
 	});
 	return $colorArray;

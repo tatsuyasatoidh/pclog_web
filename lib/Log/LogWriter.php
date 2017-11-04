@@ -16,7 +16,7 @@ class LogWriter
 		$logFile = dirname(__FILE__)."/DaoLog.log";
 		$log = date("Y-m-d H:i:s").$log;
 		error_log($log."\n",3,$this->logFile);
-		print_r($log."<br>");
+		//print_r($log."<br>");
 	}
 
 	public function info($message){
@@ -27,8 +27,8 @@ class LogWriter
     
     private function backTrace()
     {
-        $dbug = debug_backtrace();
-        $dbStr = "[ File:".$dbug[3]['file']." L:".$dbug[3]['line']." "." Fn:".$dbug[3]['function']." ]";
+			$dbug = debug_backtrace();
+			$dbStr = "[ File:".$dbug[2]['file']." L:".$dbug[2]['line']." "." Fn:".$dbug[3]['function']." ]";
 			return $dbStr;
     }
     

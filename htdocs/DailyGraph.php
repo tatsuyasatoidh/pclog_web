@@ -41,6 +41,14 @@ $graph = $dailyGraphController->createGraph($_POST);
 					<h1>時間帯別日間作業量</h1>
 			</div>
 	</div> 
+<div class="row">
+    <div class="col-lg-12">
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            メモ　15分グラフテスト。企業名株式会社IDH。ユーザー名satou.tatsuya　年月日　2017/11/04
+        </div>
+    </div>
+</div>
 <div class="panel panel-primary">
 <div class="panel-heading">
 	<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>時間帯別日間作業量</h3>

@@ -19,18 +19,19 @@ use lib\Entity\User as User;
  */
 class OperationLog extends ParentController{
 	const LOGDIR = "/var/Pclogtool/log";
-	private $operationLogArray = [];
+	/** s3上ログファイルパス key*/
+	private $logPath_s3KeyPath = "log";
+	
 	private $logFileName;
 	private $logPath_local;
 	private $logFullPath_local;
-	private $logPath_local_15 = "/15Unit";
-	private $logPath_local_30 = "/30Unit";
-	private $logPath_local_60 = "/60Unit";
-	/** s3上ログファイルパス key*/
-	private $logPath_s3KeyPath = "log/"; 
+	
+	const LOGPATH_LOCAL_15 = "/15Unit";
+	const LOGPATH_LOCAL_30 = "/30Unit";
+	const LOGPATH_LOCAL_60 = "/60Unit";
+
 	/** インスタンス*/
 	private $downLoad;
-	private $tmpLogDao;
 	
 	private $userId;
 	private $userName;
@@ -45,7 +46,6 @@ class OperationLog extends ParentController{
 	{
 		/** インスタンス*/
 		$this->downLoad = new DownLoad();
-		$this->tmpLogDao = new TmpLogDao();
 		$this->userEntity = new User($userId);
 		/** クラス変数を設定*/	
 		$this->userName = $this->userEntity->getUserName();
@@ -56,7 +56,32 @@ class OperationLog extends ParentController{
 		$this->logFileName = "log_".$this->searchDate.".csv";
 		$this->logPath_local = "$this->companyId/$this->userId/$this->logFileName";
 		$this->logFullPath_local = self::LOGDIR."/$this->logPath_local";
-		var_dump($this->logFullPath_local);
+		$this->logPath_s3KeyPath = $this->logPath_s3KeyPath."/$this->logPath_local";
+	}
+	
+	public function getLocalLogPath($type = null)
+	{
+		switch ($type)
+		{
+			case '15':
+				$dirType = self::LOGPATH_LOCAL_15;
+			break;
+			case '30':
+				$dirType = self::LOGPATH_LOCAL_30;
+			break;
+			case '60':
+				$dirType = self::LOGPATH_LOCAL_60;
+			break;
+			default:
+				$dirType = "";
+				break;
+		}
+		return self::LOGDIR."$dirType/$this->logPath_local";
+	}
+		
+	public function getS3LogPath($type = null)
+	{
+		return $this->logPath_s3KeyPath;
 	}
 	
 	/**
@@ -71,32 +96,28 @@ class OperationLog extends ParentController{
 	/**
 	 * s3から指定のログを取得する関数
 	 * @access public 
+	 * @param string ファイルの出力場所 
+	 * @param string s3のkey
 	 * @return string ログパス
 	 **/
-	public function getLogFromS3()
+	public function getLogFromS3($outputPath,$key)
 	{
 		try{
-			parent::setInfoLog("getLogFromS3 START");
-			if (@$_SERVER["SERVER_NAME"] === 'localhost') {
-				/** 開発用*/
-				//$this->logFullPath_local = $this->logFullPath_local."/11/29/log_20171012.csv";
-			}else{
-				/** keyを使いs3からファイルを取り出す。*/
-				$this->logPath_s3KeyPath = $this->logPath_s3KeyPath."/".$this->logPath_local;
-				parent::setInfoLog("s3 key is $this->logPath_s3KeyPath");
-				$this->logFullPath_local = $this->downLoad->getFromS3($this->logFullPath_local,$this->logPath_s3KeyPath);
+				parent::setInfoLog("getLogFromS3 START");
+				parent::setInfoLog("s3 key is $key");
+				$this->logFullPath_local = $this->downLoad->getFromS3($this->logFullPath_local,$key);
 				parent::setInfoLog("get file is $this->logFullPath_local");
-			}
-			/** ファイルの取り出しに失敗した場合、エラーを投げる*/
-			if(!file_exists($this->logFullPath_local)){
-				throw new \exception($this->logFullPath_local."ログファイルの取得に失敗しました。");
-			}
+					/** ファイルの取り出しに失敗した場合、エラーを投げる*/
+				if(!file_exists($this->logFullPath_local)){
+					throw new \exception($this->logFullPath_local."ログファイルの取得に失敗しました。");
+				}
 		}catch(\Exception $e){
 			parent::setInfoLog($e->getMessage());
 		}finally{
 			parent::setInfoLog("getLogFromS3 END");
-		}
 		return $this->logFullPath_local;
+		}
+		
 	}
 	
 	 /*
@@ -131,18 +152,6 @@ class OperationLog extends ParentController{
 		}
 	}
 	
-	/**
-	 * ログの配列をMysqlに保持
-	 **/
-	public function InsertLogIntoMysql($csvFile)
-	{
-		$logArray = $this->csvToArray($csvFile);
-		/** mysqlにすでにあるログを削除*/
-		$this->tmpLogDao->delete($this->userName, $this->searchDate);
-		/** Mysqlにログを入れる*/
-		$this->tmpLogDao->InsertLog($logArray);
-	}
-	
 	/** 
 	 * グラフ作成用のファイルのgetter
 	 * @param string $type グラフのタイプ
@@ -150,7 +159,6 @@ class OperationLog extends ParentController{
 	public function getLog($type)
 	{
 		$sumamry = $this->getSummary($type);
-		var_dump($this->logFullPath_local_."".$type);
 		exit;
 		
 	}
@@ -164,20 +172,31 @@ class OperationLog extends ParentController{
 		 return $smmary;
 	 }
 	
-	public function arrayToCsvFile($array){
-		$file = fopen("test.csv", "w");
-		/* CSVファイルを配列へ */
-		if( $file ){
-		var_dump( fputcsv($file, $array) );
+	public function sumarryToCsvFile($array,$csvFile){
+		if(!file_exists($csvFile)){
+				mkdir(dirname($csvFile), 0777, true);
+			}
+			if(!file_exists($csvFile)){
+				touch($csvFile);
+			}
+		$csvArray =[];
+		for ($i = 0; $i < count($array["time"]); $i++)
+		{
+			$csvArray[$i]["time"] =$array["time"][$i];
+			$csvArray[$i]["work"] =$array["work"][$i];
 		}
-
-		/* ファイルポインタをクローズ */
+		// ファイルを書き込み用に開きます。
+		$file = fopen($csvFile, "w");
+		if ( $file ) {
+			// $ary から順番に配列を呼び出して書き込みます。
+			foreach($csvArray as $line){
+				// fputcsv関数でファイルに書き込みます。
+				fputcsv($file, $line);
+			} 
+		}
+		// ファイルを閉じます。
 		fclose($file);
-
-		foreach ($array as $fields){
-			fputcsv(STDOUT, $fields);
-		}
+		return $csvFile;
 	}
-	
 	
 }

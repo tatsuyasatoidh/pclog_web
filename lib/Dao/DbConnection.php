@@ -21,14 +21,14 @@ class DbConnection extends PDO{
 				$dsn = "mysql:dbname=$this->dbname;host=$this->hostname";
 				$user = "$this->username";
 				$password = "$this->password";
-				$this->pdo =  new PDO($dsn, $user, $password);
+				$this->pdo =  new PDO($dsn, $user, $password,array(PDO::MYSQL_ATTR_LOCAL_INFILE => true));
 			}else{
 				$dbs = "mysql:host=pclog.c5q2rhfkfpib.us-west-2.rds.amazonaws.com;dbname=pclog;charset=utf8";
 				$user = "root";
 				$pass = "idhpclogtool";
 				// $sql = "INSERT INTO [テーブル名] (columnNum,  columnStr) VALUES(10, 'テスト');";
 				// PDOを使ってRDSに接続
-				$this->pdo = new PDO($dbs, $user, $pass);
+				$this->pdo = new PDO($dbs, $user, $pass,array(PDO::MYSQL_ATTR_LOCAL_INFILE => true));
 			}
 		}catch (PDOException $e){
 			print('Connection failed:'.$e->getMessage());

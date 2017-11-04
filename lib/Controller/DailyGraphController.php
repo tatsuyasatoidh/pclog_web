@@ -24,20 +24,19 @@ class DailyGraphController
 	{
 		/** グラフ作成クラスのインスタンス*/
 		$this->graph = new Graph();
+		$this->formController = new FormController();
 	}
 	
 	/** ユーザー選択肢を表示する*/
 	public function displayUserOption()
 	{
-		$formController = new FormController();
-		return $formController->getUserOption();
+		return $this->formController->getUserOption();
 	}
 
 	/** 企業名選択肢を表示する*/
 	public function displayCompanyOption()
 	{
-		$formController = new FormController();
-		return $formController->getCompanyOption();
+		return $this->formController->getCompanyOption();
 	}
 	
 	/**

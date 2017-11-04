@@ -5,103 +5,89 @@ class_exists('lib\Dao\ParentDao') or require_once  $_SERVER['DOCUMENT_ROOT'].'/l
 include_once dirname(__FILE__).'/../Entity/TmpLog.php';
 
 class TmpLogDao extends ParentDao {
+  
+	private $tableName = "tmp_log";    
 
-    private $logPath = "log";    
+	/** コンストラクタ*/
+	public function __construct($companyId,$userId,$date) {
+		$date = date('Ymd',strtotime($date));
+		$this->tableName ="tmp_log_".$companyId."_".$userId."_".$date;
+	}
+
+	/*
+	* tmplogを削除
+	* ファイルからデータを取得する前に一度初期化してデータのずれを防ぐ
+	*/
+	public function emptyTable() {
+		 try {
+					$qy = " DELETE FROM `$this->tableName` WHERE 1=1";
+					parent::setInfoLog($qy);
+					$result=parent::commitStmt($qy);
+			} catch ( Exception $e ) {
+				 parent::setInfoLog($e->getMessage());
+			} finally {
+				 return $result;
+			}
+	}
     
-    /*
-    * tmplogを削除
-    * ファイルからデータを取得する前に一度初期化してデータのずれを防ぐ
-    */
-    public function delete($user_name, $date) {
-       try {
-            $qy = " DELETE FROM pclog.tmp_log ";
-            $qy .=" WHERE user_name='$user_name' AND date='$date'";
-		    		parent::setInfoLog($qy);
-            $result=parent::commitStmt($qy);
+	/*
+	* テーブルの作成
+	* @access public
+	*/
+	public function createTable() {
+		try {
+					$qy = "CREATE TABLE `$this->tableName` (
+								`user_name` varchar(255) NOT NULL,
+								`date` date NOT NULL,
+								`time` time NOT NULL,
+								`key` varchar(255) NOT NULL,
+								`work` int(11) NOT NULL
+							) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+					$result=parent::commitStmt($qy);
         } catch ( Exception $e ) {
            parent::setInfoLog($e->getMessage());
         } finally {
 				 	 return $result;
         }
-    }
+	}
+	
+	public function loadDataCsv($csvFilePath)
+	{
+		$this->emptyTable();
+		$qy="LOAD DATA LOCAL INFILE '$csvFilePath' INTO TABLE `$this->tableName` FIELDS TERMINATED BY ','";
+		$result=parent::commitStmt($qy);
+	}
     
-    /*
-    * csvファイルからデータをmysqlテーブルにデータを格納する
-    */
-	public function InsertLog($array){
-		try{
-			if(!$array){
-				throw new \exception("not exist Array");
-			}
-			for($i=0;$i<count($array);$i++)
-			{
-				$userName =(($array[$i]["user_name"]));
-				$date =(($array[$i]["date"]));
-				$time =(($array[$i]["time"]));
-				$work =1;
-
-				$qy=
-					'INSERT INTO pclog.tmp_log(
-					`user_name`,
-					`date`,
-					`time`,
-					`work`
-					)VALUES (
-					"'.$userName.'", 
-					"'.$date.'", 
-					"'.$time.'",
-					"'.$work.'"
-					)';
-					$result=parent::commitStmt($qy);
-			}
-		}catch(\Exception $e){
-			parent::setInfoLog($e->getMessage());
-			$result = false;
-		}finally{
-			return $result;
-		}
-}  
-    
-    
-   public function getSumWorks($user, $date, $interval){
+  public function getSumWorks($unitType){
 	   try{
 				parent::setInfoLog("getSumWorks START");
+				parent::setInfoLog("type is $unitType");
 				$result ="";
 				$resultArray="";
-				if($interval=='15'){
-				#15分
-				$qy="SELECT SUM(work) AS work ,FROM_UNIXTIME(round(UNIX_TIMESTAMP(tmp_log.time) div (15 * 60)) * (15 * 60) , '%H:%i') AS time FROM tmp_log";
-				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY time";
-
-				}elseif($interval=='30'){
-
-				#30分
-				$qy="SELECT SUM(work)AS work,FROM_UNIXTIME(round(UNIX_TIMESTAMP(tmp_log.time) div (30 * 60)) * (30 * 60) , '%H:%i') AS time FROM tmp_log";
-				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY time";    
-
-				}elseif($interval=='1'){  
-				#1h
-				$qy="SELECT DATE_FORMAT(tmp_log.time, '%H:00') AS time, SUM(work)AS work FROM tmp_log";
-				$qy .= " WHERE user_name= '$user' AND date ='$date' GROUP BY DATE_FORMAT(tmp_log.time, '%H')";
+				if($unitType=='15'){
+					#15分
+					$qy="SELECT SUM(work) AS work ,FROM_UNIXTIME(round(UNIX_TIMESTAMP($this->tableName.time) div (15 * 60)) * (15 * 60) , '%H:%i') AS time FROM `$this->tableName` GROUP BY time";
+				}elseif($unitType=='30'){
+					#30分
+					$qy="SELECT SUM(work)AS work,FROM_UNIXTIME(round(UNIX_TIMESTAMP($this->tableName.time) div (30 * 60)) * (30 * 60) , '%H:%i') AS time FROM `$this->tableName` GROUP BY time";
+				}elseif($unitType=='1'){  
+					#1h
+					$qy="SELECT DATE_FORMAT($this->tableName.time, '%H:00') AS time, SUM(work)AS work FROM `$this->tableName` GROUP BY DATE_FORMAT($this->tableName.time, '%H')";
 				}
 				$result=parent::commitStmt($qy);
 				$i=0;
-
 				if($result){
 					foreach($result as $row){
-					$resultArray['work'][$i]=$row['work'];
-					$resultArray['time'][$i]=$row['time'];
-					$i++;
+						$resultArray['work'][$i]=$row['work'];
+						$resultArray['time'][$i]=$row['time'];
+						$i++;
 					}
-				}else{
-					$resultArray="";
 				}
 		 } catch ( Exception $e ) {
 				parent::setInfoLog($e->getMessage());
-				die ( $e );
         } finally {
-			 parent::setInfoLog("getSumWorks END");
-			return $resultArray;
+				parent::setInfoLog("getSumWorks END");
+				return $resultArray;
 		}
    }
 }
