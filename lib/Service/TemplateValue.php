@@ -13,7 +13,7 @@ class TemplateValue{
 				$this->tempLog=$this->Every15MinutesData();
 			}elseif($interval=="30"){
 				$this->tempLog=$this->Every30MinutesData();
-			}elseif($interval=="1"){
+			}elseif($interval=="60"){
 				$this->tempLog=$this->EveryHoursData();
 			}else{
 				$this->tempLog="";
@@ -27,6 +27,7 @@ class TemplateValue{
 	
 	#mysql tmp_logと比較
 	public function compareMysqlLog($tmplateVal,$seachVal){
+		
 		for($count=0;$count<count($tmplateVal['time']);$count++){
 			
 			if(in_array($tmplateVal['time'][$count],$seachVal['time'])){

@@ -41,6 +41,26 @@ class UserDao extends ParentDao{
 			return $row;
 		}
 	}
+
+ /**
+	* userIdを使用してレコードを取得する
+	* @access public
+	* @return string 操作ユーザー名
+	**/
+	public function getByCompanyId($companyId)
+	{
+		try {
+			parent::setInfoLog("getByUserId START");
+			$qy = " SELECT * FROM pclog.user WHERE id = '${companyId}'";
+			$row=parent::commitStmt($qy);			
+		} catch ( Exception $e ) {
+			echo $e;
+			die ( $e );
+		} finally {
+			parent::setInfoLog("getByUserId END");
+			return $row;
+		}
+	}
 	
 	/**
 	 * メールアドレスとパスワードを指定してレコードが存在するか確認する。

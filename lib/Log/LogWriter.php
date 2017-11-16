@@ -13,8 +13,6 @@ class LogWriter
 	/** ログをファイルに書き出す*/
 	private function write($log)
 	{
-		$logFile = dirname(__FILE__)."/DaoLog.log";
-		$log = date("Y-m-d H:i:s").$log;
 		error_log($log."\n",3,$this->logFile);
 		//print_r($log."<br>");
 	}
@@ -25,12 +23,11 @@ class LogWriter
 		$this->write($message);
 	}
     
-    private function backTrace()
-    {
-			$dbug = debug_backtrace();
-			$dbStr = "[ File:".$dbug[2]['file']." L:".$dbug[2]['line']." "." Fn:".$dbug[3]['function']." ]";
-			return $dbStr;
-    }
-    
-    
+	private function backTrace()
+	{
+		$dbug = debug_backtrace();
+		$dbStr = "[ File:".$dbug[2]['file']." L:".$dbug[2]['line']." "." Fn:".$dbug[3]['function']." ]";
+		return $dbStr;
+   }
+
 }

@@ -49,6 +49,15 @@ if(isset($_POST['submit'])){
 	<a class="navbar-brand">PcLogTool</a>
 	</div>
 </nav>
+	<div class="row">
+    <div class="col-lg-12">
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            テスト社員　test@gmail.com　idhtest<br>
+					  IDHテスト社員　idhtest@mail.com idhtest　
+        </div>
+    </div>
+</div>
 	<div class="col-lg-12 text-center v-center">
 		<h1>ログイン</h1>
 		<?php if(isset($loginController)):?>

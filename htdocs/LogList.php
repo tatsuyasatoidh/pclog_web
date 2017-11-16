@@ -1,21 +1,17 @@
 <?php 
 ini_set( 'display_errors', 1 );
-class_exists('lib\Controller\Form\FormController') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Controller/Form/FormController.php';
+require_once 'common/SessionChecker.php';
+
 class_exists('lib\Controller\LogListController') or require_once  $_SERVER['DOCUMENT_ROOT'].'/lib/Controller/LogListController.php';
 
-use lib\Controller\Form\FormController as FormController;
 use lib\Controller\LogListController as LogListController;
 
-/*フォームの作成　*/
-$formController = new FormController();
+
+
 /** コントローラ　*/
-$logListController=new LogListController();
+$logListController=new LogListController($_SESSION["UserId"]);
 /** ログリストテーブルを作成*/
 $logTable = $logListController->getLogList($_POST);
-/** userセレクト*/
-$userOption=$formController->getUserOption();
-/** 企業セレクト*/
-$companyOption=$formController->getCompanyOption();
 ?>
 
 <!DOCTYPE html>
@@ -40,29 +36,25 @@ $companyOption=$formController->getCompanyOption();
 			</header>
 			<div class="row">
 					<div class="col-lg-12">
-							<h1>ログファイル一覧 <small>Dashboard Home</small></h1>
+							<h1>作業ログ一覧</h1>
 					</div>
 			</div> 
+			<?php require_once 'common/SerchForm.php';?>
+		<?php if($logTable):?>
 			<div class="panel panel-primary">
 					<div class="panel-heading">
-							<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>検索</h3>
-					</div>        
-					<div>
-							<form method="post">
-									<label>企業名</label><select name="company" id="company" required style="height: 40px;"><?= $companyOption;?></select>
-									<label for="user" >ユーザー</label><select name="user" id="user" required style="height: 40px;"><?= $userOption;?></select>
-									<label>年月日</label><input type="date" name="start_date" id="start_date">
-									<label>年月日</label><input type="date" name="end_date" id="end_date">
-									<button id="submit" name="submit" type="submit" class="btn btn-primary" value="submit">検索</button>
-							</form>
-					</div>
-			</div>
-			<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>検索</h3>
+						<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>作業ログ一覧</h3>
 					</div>
 					<div class="panel-body"><?= $logTable;?></div>
 			</div>
+		<?php else:?>
+			<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>作業ログ一覧</h3>
+					</div>
+					<div class="panel-body">該当のデータはありません</div>
+			</div>
+		<?php endif;?>
     </div>
 <script type="text/javascript" src="js/datatables/jquery.dataTables.js"></script>
 <script type="text/javascript" charset="utf-8">

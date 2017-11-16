@@ -13,15 +13,16 @@ class Download extends ParentController{
     
     /*ファイルをローカルにダウンロード**/
     public function toLocal($File){
-        parent::setInfoLog("toLocal START");
-        /* File Read */
-        $read_data = file_get_contents($File);
-        $fileName = basename($File);
-				echo $read_data;
-        /* Output HTTP Header */
-        header('Content-Disposition: inline; filename="'.$fileName.'"');
-        header('Content-Type: application/octet-stream');
-		
+			parent::setInfoLog("toLocal START");
+			/* File Read */
+			$read_data = file_get_contents($File);
+			$fileName = basename($File);
+
+			/* Output HTTP Header */
+			header('Content-Disposition: inline; filename="'.$fileName.'"');
+			header('Content-Type: application/octet-stream');
+						echo $read_data;
+			exit;
     }
 	
 	/** S3からファイルをダウンロードする処理*/

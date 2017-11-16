@@ -12,6 +12,11 @@ class User {
 	private $mailAddress;
 	private $machineName;
 	private $companyId;
+	/** ツール上の権限*/
+	private $permition;
+	
+	const PERMITION_ALL = "ALL";
+	const PERMITION_NONE = "NONE";
 
 	/** コンストラクタ*/
 	public function __construct($userId = null)
@@ -25,6 +30,7 @@ class User {
 				$this->userName = $value['user_name'];
 				$this->companyId = $value['company_id'];
 			}
+			$this->setPermition();
 		}
 	}
     
@@ -57,6 +63,16 @@ class User {
     }
     public function getCompanyId() {
         return $this->companyId;
+    }
+	  private function setPermition() {
+			if($this->companyId == 11){
+				$this->permition = self::PERMITION_ALL;
+			}else{
+				$this->permition = self::PERMITION_NONE;
+			}     
+    }
+    public function getPermition() {
+        return $this->permition;
     }
 }
 ?>

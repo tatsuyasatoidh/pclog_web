@@ -26,74 +26,107 @@ class Graph extends ParentController{
 	private $interval;
 	private $result;
 	
-	private $GraphINfoPathArray =[];
+	private $GraphINfoPath_15 =[];
+	private $GraphINfoPath_30 =[];
+	private $GraphINfoPath_60 =[];
 	
 	/** エラーメッセージ*/
 	private $errorMessage = [];
+	
+	const GRAPH_TYPE_15 = "15";
+	const GRAPH_TYPE_60 = "60";
     
-		/**
-		 * クラス変数に値をセットする関数
-		 * @access public
-		 * @param array $param 入力値
-		 **/
-    private function setVal($post){
-			parent::setInfoLog("setVal START"); 
-			$this->Ymd      = date('Ymd',strtotime($post["date"]));
-			$this->company  = $post["company"];
-			$this->user     = $post["user"];
-			$this->interval = $post["type"];
-			/** s3　keyを生成*/
-			$this->s3KeyPath .= $this->company. "/" .$this->user. "/" .$this->Ymd;
-			parent::setInfoLog("setVal END"); 
-    }
+//		/**
+//		 * クラス変数に値をセットする関数
+//		 * @access public
+//		 * @param array $param 入力値
+//		 **/
+//    private function setVal($post){
+//			parent::setInfoLog("setVal START"); 
+//			$this->Ymd      = date('Ymd',strtotime($post["date"]));
+//			/**企業名での検索はIDHのみ*/
+//			//$this->company  = $post["company"];
+//			$this->user     = $post["user"];
+//			/** s3　keyを生成*/
+//			$this->s3KeyPath .= $this->company. "/" .$this->user. "/" .$this->Ymd;
+//			parent::setInfoLog("setVal END"); 
+//    }
     
 		/**
 		 * グラフ作成実行関数
 		 * @access public
 		 * @param array $param 入力値
 		 **/
-    public function create($companyId,$userId,$date,$unitType)
+    public function create($userId,$date)
     {
 			try{
 				parent::setInfoLog("create START");
 				$result = false;
 				/**　操作ログを扱うクラス */
-				$operationLog = new OperationLog($userId,$date);
-				/** 操作ログファイル（グラフ用）のパスを生成*/
-				$GraphINfoPath = $operationLog->getLocalLogPath($unitType);
+				$this->operationLog = new OperationLog($userId,$date);
 //				/** 操作ログファイル（グラフ用）のファイルがあるかを確認*/
 //				if(file_exists($GraphINfoPath)){
 //					/** グラフ作成用のファイルがすでに作成されている場合はそのファイルを使用してグラフを作成する*/
 //					parent::setInfoLog("file exist $GraphINfoPath");
 //					$this->GraphINfoPathArray = $this->getInfoFromCsv($GraphINfoPath);
 //				}else{
-					$this->tmpLogDao = new TmpLogDao($companyId,$userId,$date);
-					$TemplateValue = new TemplateValue($unitType);
+					$this->tmpLogDao = new TmpLogDao($userId,$date);
 					/** グラフがない場合はS3からログを取得*/
-					$logs3Key = $operationLog->getS3LogPath();
+					$logs3Key = $this->operationLog->getS3LogPath();
 					/** 操作ログファイルを出力するパスを生成*/
-					$outputPath = $operationLog->getLocalLogPath();
+					$outputPath = $this->operationLog->getLocalLogPath();
 					/** ログファイルをS3から取得*/
-					$logPath = $operationLog->getLogFromS3($outputPath,$logs3Key);
+					$logPath = $this->operationLog->getLogFromS3($outputPath,$logs3Key);
+					if(!file_exists($logPath)){
+						throw new \exception("s3からログを取得処理に失敗しました");
+					}
 					/** ログファイルをmysqlに追加して操作*/
 					$this->tmpLogDao->createTable();
 					$this->tmpLogDao->loadDataCsv($logPath);
-					$sumaryWorkArray = $this->tmpLogDao->getSumWorks($unitType);
-					/** 時間単位別のテンプレートログを取得*/
-					$tmpArray = $TemplateValue->getTempLog();
-					/** テンプレートログとMYsqlから取り出したサマリーを照合*/
-					$sumaryWorkArray = $TemplateValue->compareMysqlLog($tmpArray,$sumaryWorkArray);
-					$GraphINfoPath = $operationLog->sumarryToCsvFile($sumaryWorkArray,$GraphINfoPath);
-					$this->GraphINfoPathArray = $this->getInfoFromCsv($GraphINfoPath);
+					/** 15分ごとのグラフのサマリーを取得*/
+					$this->GraphINfoPath_15 =$this->createGraphInfoArray(self::GRAPH_TYPE_15);
+					/** 1hごとのグラフのサマリーを取得*/
+					$this->GraphINfoPath_60 =$this->createGraphInfoArray(self::GRAPH_TYPE_60);
 //				}
 				$result = true;
-			}catch(exception $e){
-				parent::setInfoLog($e->getMessage()); 
+			}catch(\exception $e){
+				parent::setInfoLog($e->getMessage());
+				
 			}finally{
 				parent::setInfoLog("create END");
 				return $result;
 			}
     }
+	
+	/*
+	 * 24時間グラフを作成する関数
+	 * @param string csvファイルのパス
+	 * @return  array 配列
+	 */
+	public function createGraphInfoArray($graphType)
+	{
+	try{
+				parent::setInfoLog("create24Graph START");
+				$result = null;
+				$TemplateValue = new TemplateValue($graphType);
+				/** 操作ログファイル（グラフ用）のパスを生成*/
+				$GraphInfoPath = $this->operationLog->getLocalLogPath($graphType);
+				$sumaryWorkArray = $this->tmpLogDao->getSumWorks($graphType);
+				/** 時間単位別のテンプレートログを取得*/
+				$tmpArray = $TemplateValue->getTempLog();
+				/** テンプレートログとMYsqlから取り出したサマリーを照合*/
+				$sumaryWorkArray = $TemplateValue->compareMysqlLog($tmpArray,$sumaryWorkArray);
+				$GraphInfoPath = $this->operationLog->sumarryToCsvFile($sumaryWorkArray,$GraphInfoPath);
+				/** 作成した配列からCSVファイルを作成*/
+				$result = $this->getInfoFromCsv($GraphInfoPath);
+			}catch(\exception $e){
+				parent::setInfoLog($e->getMessage());
+			}finally{
+				parent::setInfoLog("create24Graph END");
+				return $result;
+			}
+    }
+
 	
 	 /*
 	 * csvファイルを配列にする
@@ -132,7 +165,24 @@ class Graph extends ParentController{
 	{
 		return $this->GraphINfoPathArray;
 	}
+	
+	/** 
+	 * 15分用グラフの情報のgetter
+	 * @access public 
+	 */
+	public function getGraphINfoPath_15()
+	{
+		return $this->GraphINfoPath_15;
+	}				
 		
+	/** 
+	 * 60分用グラフの情報のgetter
+	 * @access public 
+	 */
+	public function getGraphINfoPath_60()
+	{
+		return $this->GraphINfoPath_60;
+	}
     public function getResult()
     {
         return $this->result;
@@ -140,7 +190,7 @@ class Graph extends ParentController{
     
     /** 結果の合計を取得*/
     public function getTotalWork(){
-        $result = $this->result;
+        $result = $this->GraphINfoPath_15;
         return array_sum($result['work']);
     }
     
@@ -184,42 +234,6 @@ class Graph extends ParentController{
 		}
 		return $dataPoints;
   }
-		
-	#$val フォームの値（user_name,）
-	function monthGraph($val)
-  {
-		parent::setInfoLog("monthGraph START"); 
-    $PclogDao = new PclogDao();
-		if(isset($val['month'])){
-			$val['start_date']=$val['month']."-01";
-			$val['end_date']=$val['month']."-31";
-		}else{
-			$val['start_date']="";
-			$val['end_date']="";
-		}
-		$result=$PclogDao->getAllWhere($val['company'], $val['user'], $val['start_date'], $val['end_date'] );
-      
-		if($result){	
-			$dataPoints = [];
-			$i=0;
-			
-			#月の日数を取得
-			for($i=0;$i<=date('t',strtotime($val['month']));$i++){
-				$dataPoints['work'][$i]=0;
-        $dataPoints['date'][$i]=$val['month']."-".$i;
-			}
-			foreach($result as $row){
-				$i=date('j',strtotime($row['date']));
-				$dataPoints['work'][$i]=$row['number_of_work'];
-			}
-		}else{
-			$dataPoints=false;
-		}
-      $this->result =  $dataPoints;
-			parent::setInfoLog("monthGraph END"); 
-      return true;
-	}
-	
 
     /*抽出結果が0件*/
   protected function dataNotAvailable(){

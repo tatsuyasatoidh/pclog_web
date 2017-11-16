@@ -72,4 +72,53 @@ class PclogDao extends ParentDao{
        parent::setInfoLog("getAllWhere END");
         }
     }
+	
+	function getByCompanyId($companyId){
+        try {
+					parent::setInfoLog("getAllWhere START");
+            $qy = "SELECT pclog.id,
+            pclog.date,
+            pclog.user_id,
+            pclog.number_of_work,
+            user.user_name,
+            user.company_id,
+            company.company_name
+            FROM pclog 
+						JOIN user 
+						ON pclog.user_id = user.id 
+						JOIN company ON user.company_id = company.id 
+						AND company.id = '$companyId'";
+            parent::setInfoLog($qy);
+            $result=parent::commitStmt($qy);
+            return $result;
+ 
+        } catch ( Exception $e ) {
+            echo $e;
+            die ( $e );
+        } finally {
+       parent::setInfoLog("getAllWhere END");
+        }
+    }
+	
+	/** 
+	 *月間ログをSELECT
+	 * @access public
+	 * @param $userId
+	 * @param $Ym
+	 */
+	public function getMonthLog($userID,$Ym)
+	{
+	 try {
+				parent::setInfoLog("getMonthLog START");
+				$qy = "SELECT * FROM pclog WHERE date_format(date, '%Y%m') = '$Ym' AND user_id = $userID GROUP BY DATE(`date`)";
+				parent::setInfoLog($qy);
+				$result=parent::commitStmt($qy);
+			} catch ( Exception $e ) {
+					echo $e;
+					die ( $e );
+			} finally {
+		 		parent::setInfoLog("getMonthLog END");
+		 		return $result;
+			}
+	}
 }

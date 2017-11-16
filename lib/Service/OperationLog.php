@@ -174,8 +174,10 @@ class OperationLog extends ParentController{
 	
 	public function sumarryToCsvFile($array,$csvFile){
 		if(!file_exists($csvFile)){
+			if(!file_exists(dirname($csvFile))){
 				mkdir(dirname($csvFile), 0777, true);
 			}
+		}
 			if(!file_exists($csvFile)){
 				touch($csvFile);
 			}

@@ -1,4 +1,4 @@
-<?php session_start();
+<?php 
 ini_set( 'display_errors', 1 );
 
 class_exists('lib\Entity\User') or require_once $_SERVER['DOCUMENT_ROOT'].'/lib/Entity/User.php';
@@ -21,9 +21,9 @@ $loginUserName = $loginUser->getUserName();
 		</div>
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 				<ul class="nav navbar-nav navbar-right navbar-user">
-						<li><a href="/htdocs/LogList.php"><i class="fa fa-bullseye"></i> Dashboard</a></li>
-						<li><a href="/htdocs/DailyGraph.php"><i class="fa fa-tasks"></i> DailyGraph</a></li>
-						<li><a href="/htdocs/MonthGraph.php"><i class="fa fa-tasks"></i> MonthGraph</a></li>
+						<li><a href="/htdocs/LogList.php"><i class="fa fa-bullseye"></i> 作業量ログ一覧</a></li>
+						<li><a href="/htdocs/DailyGraph.php"><i class="fa fa-tasks"></i> 個人別作業ログ</a></li>
+<!--						<li><a href="/htdocs/MonthGraph.php"><i class="fa fa-tasks"></i> MonthGraph</a></li>-->
 						 <li class="dropdown user-dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?= $loginUser->getUserName();?><b class="caret"></b></a>
 								<ul class="dropdown-menu">

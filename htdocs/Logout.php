@@ -35,7 +35,7 @@ session_destroy();
 	<div class="col-lg-12 text-center v-center">
 		<h3>ログアウトしました。</h3>
 		<br>
-		<a href="login.php">ログイン画面</a>
+		<a href="Login.php">ログイン画面</a>
 	</div>
 	</div>
 </div>

@@ -9,9 +9,9 @@ class TmpLogDao extends ParentDao {
 	private $tableName = "tmp_log";    
 
 	/** コンストラクタ*/
-	public function __construct($companyId,$userId,$date) {
+	public function __construct($userId,$date) {
 		$date = date('Ymd',strtotime($date));
-		$this->tableName ="tmp_log_".$companyId."_".$userId."_".$date;
+		$this->tableName ="tmp_log_".$userId."_".$date;
 	}
 
 	/*
@@ -66,20 +66,20 @@ class TmpLogDao extends ParentDao {
 				$resultArray="";
 				if($unitType=='15'){
 					#15分
-					$qy="SELECT SUM(work) AS work ,FROM_UNIXTIME(round(UNIX_TIMESTAMP($this->tableName.time) div (15 * 60)) * (15 * 60) , '%H:%i') AS time FROM `$this->tableName` GROUP BY time";
+					$qy="select SUM(work) AS work,from_unixtime(round(unix_timestamp(time) div (15 * 60)) * (15 * 60)) AS timekey from $this->tableName group by timekey";
 				}elseif($unitType=='30'){
 					#30分
-					$qy="SELECT SUM(work)AS work,FROM_UNIXTIME(round(UNIX_TIMESTAMP($this->tableName.time) div (30 * 60)) * (30 * 60) , '%H:%i') AS time FROM `$this->tableName` GROUP BY time";
-				}elseif($unitType=='1'){  
+					$qy="select SUM(work) AS work,from_unixtime(round(unix_timestamp(time) div (30 * 60)) * (30 * 60)) AS timekey from $this->tableName group by timekey";
+				}elseif($unitType=='60'){  
 					#1h
-					$qy="SELECT DATE_FORMAT($this->tableName.time, '%H:00') AS time, SUM(work)AS work FROM `$this->tableName` GROUP BY DATE_FORMAT($this->tableName.time, '%H')";
+					$qy="SELECT DATE_FORMAT($this->tableName.time, '%H:00') AS timekey, SUM(work)AS work FROM `$this->tableName` GROUP BY DATE_FORMAT($this->tableName.time, '%H')";
 				}
 				$result=parent::commitStmt($qy);
 				$i=0;
 				if($result){
 					foreach($result as $row){
 						$resultArray['work'][$i]=$row['work'];
-						$resultArray['time'][$i]=$row['time'];
+						$resultArray['time'][$i]=date("H:i",strtotime($row['timekey']));
 						$i++;
 					}
 				}
