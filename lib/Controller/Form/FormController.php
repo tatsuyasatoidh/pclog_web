@@ -22,13 +22,13 @@ class FormController extends ParentController
     
     public function getUserOption()
     {
-				parent::setInfoLog("getUserOption START");
+                parent::setInfoLog("getUserOption START");
         $result = $this->userDao->get();
         $option="";
-        foreach($result as $row){
+        foreach ($result as $row) {
             $option.="<option value=".$row['id'].">".$row['user_name']."</option>";
         }
-				parent::setInfoLog("getUserOption END");
+                parent::setInfoLog("getUserOption END");
         return $option;
     }
     
@@ -36,7 +36,7 @@ class FormController extends ParentController
     {
         $result = $this->companyDao->get();
         $option="";
-        foreach($result as $row){
+        foreach ($result as $row) {
             $option.="<option value=".$row['id'].">".$row['company_name']."</option>";
         }
         return $option;

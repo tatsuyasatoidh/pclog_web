@@ -12,39 +12,38 @@ use lib\Service\OperationLog as OperationLog;
  **/
 class MonthGraphController
 {
-	/** エラーメッセージ*/
-	private $errorMessage = [];
-	private $graphInfo = [];
-	private $graph;
-	
-	public function __construct($post = null)
-	{
-		/** グラフ作成クラスのインスタンス*/
-		$this->graph = new Graph();
-	}
-	
-	/**
-	 * グラフを作成
-	 * @access public 
-	 **/
-	public function createGraph($val = null)
-	{
-			try{
-				$result = false;
-				if($val){
-					$result = $this->graph->create($val["user"],$val["date"]);
-					/** 結果がfalseの場合は*/
-					if(!$result){
-						throw new \exception("該当データがありません。");
-					}
-					$result = true;
-				}
-			}catch(\Exception $e){
-				$result = false;
-				var_dump($e->getMessage());
-			}finally{
-				return $result;
-			}	
-		}
-	
+    /** エラーメッセージ*/
+    private $errorMessage = [];
+    private $graphInfo = [];
+    private $graph;
+    
+    public function __construct($post = null)
+    {
+        /** グラフ作成クラスのインスタンス*/
+        $this->graph = new Graph();
+    }
+    
+    /**
+     * グラフを作成
+     * @access public
+     **/
+    public function createGraph($val = null)
+    {
+        try {
+            $result = false;
+            if ($val) {
+                $result = $this->graph->create($val["user"], $val["date"]);
+                /** 結果がfalseの場合は*/
+                if (!$result) {
+                    throw new \exception("該当データがありません。");
+                }
+                $result = true;
+            }
+        } catch (\Exception $e) {
+            $result = false;
+            var_dump($e->getMessage());
+        }finally{
+            return $result;
+        }
+    }
 }

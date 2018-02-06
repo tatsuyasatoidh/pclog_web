@@ -1,5 +1,5 @@
 <?php
-ini_set( 'display_errors', 1 );
+ini_set('display_errors', 1);
 /*
 * クリックしてcsvをダウンロードするphp
 */
@@ -9,17 +9,15 @@ use lib\Service\HttpRequest\Download as Download;
 
 function getLogcsv($key)
 {
-	try{
-		$downLoadManage = new Download();
-		$key = $key.".csv";
-		$outputPath = "/tmp/".$key;
-		$downLoadManage->getFromS3($outputPath,$key);
-		$downLoadManage->toLocal($outputPath);
-	}catch(Exception $e){
-		echo "s3からのダウンロードに失敗しました";
-	}
+    try {
+        $downLoadManage = new Download();
+        $key = $key.".csv";
+        $outputPath = "/tmp/".$key;
+        $downLoadManage->getFromS3($outputPath, $key);
+        $downLoadManage->toLocal($outputPath);
+    } catch (Exception $e) {
+        echo "s3からのダウンロードに失敗しました";
+    }
 }
 
 getLogcsv($_GET['log_path']);
-
-?>
