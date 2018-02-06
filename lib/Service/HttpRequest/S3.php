@@ -9,14 +9,16 @@ use lib\Controller\ParentController as ParentController;
 
 class S3Request extends ParentController
 {
-	const bucket_name = 'elasticbeanstalk-us-west-2-443316351375';
-	const SECRET = '5mBXv/jmmqulsAbShnUwrF+fOgoMAVi4OAF/bw2v';
+    const bucket_name = 'elasticbeanstalk-us-west-2-443316351375';
+    const SECRET = '5mBXv/jmmqulsAbShnUwrF+fOgoMAVi4OAF/bw2v';
     
-    public function __construct(){
+    public function __construct()
+    {
     }
     
-    public function putFile($bucket_name, $key_name){ 
-        // Upload 
+    public function putFile($bucket_name, $key_name)
+    {
+        // Upload
         $result = $this->s3Client->putObject([
             'Bucket' => $bucket_name,
             'Key'    => $key_name,
@@ -26,53 +28,52 @@ class S3Request extends ParentController
     
     /*
      * s3からファイルをダウンロードして、/tmpディレクトリに吐き出す。
-		 * @param string $localPath ダウンロードをしたファイルを出力するパス
-		 * @param string $key_name キー名
+         * @param string $localPath ダウンロードをしたファイルを出力するパス
+         * @param string $key_name キー名
      * @return string 出力したファイルパス 
      */
-    public function getFile($localPath,$key_name){
-		
-			parent::setInfoLog("getFile START");
-			parent::setInfoLog("key is :$key_name");
-			parent::setInfoLog("output path :$localPath");
-			//sdk設定   
-			$sdk = new \Aws\Sdk([
-				'region'   => 'us-west-2',
-				'version'  => 'latest',
-				'credentials' => array(
-				'key' => 'AKIAJMFK3V5OXYQET64A',
-				'secret'  => self::SECRET,
-			)
-			]);
+    public function getFile($localPath, $key_name)
+    {
+        
+            parent::setInfoLog("getFile START");
+            parent::setInfoLog("key is :$key_name");
+            parent::setInfoLog("output path :$localPath");
+            //sdk設定
+            $sdk = new \Aws\Sdk([
+                'region'   => 'us-west-2',
+                'version'  => 'latest',
+                'credentials' => array(
+                'key' => 'AKIAJMFK3V5OXYQET64A',
+                'secret'  => self::SECRET,
+            )
+            ]);
 
-			// SDK内のＳ３クラスを使用
-			$s3Client = $sdk->createS3();
-			// Download
-			$result = $s3Client->getObject([
-				'Bucket' => self::bucket_name,
-				'Key'    => $key_name
-			]);
+            // SDK内のＳ３クラスを使用
+            $s3Client = $sdk->createS3();
+            // Download
+            $result = $s3Client->getObject([
+                'Bucket' => self::bucket_name,
+                'Key'    => $key_name
+            ]);
 
-			/*s3からもってきたファイルをサーバーに出力する*/
-			$key_name = str_replace('/','_',$key_name);
+            /*s3からもってきたファイルをサーバーに出力する*/
+            $key_name = str_replace('/', '_', $key_name);
 
-			if(!file_exists($localPath)){
-				if(!file_exists(dirname($localPath))){
-					mkdir(dirname($localPath), 0777, true);
-				}
-			}
-			if(!file_exists($localPath)){
-				touch($localPath);
-			}
-			$length = $result['ContentLength'];
-			$result['Body']->rewind();
-			$data = $result['Body']->read($length);
-			// ファイルに書き込む
-			file_put_contents($localPath, $data);
-			parent::setInfoLog("getFile END");
-			#ファイルパスを返す
-			return $localPath;
+        if (!file_exists($localPath)) {
+            if (!file_exists(dirname($localPath))) {
+                mkdir(dirname($localPath), 0777, true);
+            }
+        }
+        if (!file_exists($localPath)) {
+            touch($localPath);
+        }
+            $length = $result['ContentLength'];
+            $result['Body']->rewind();
+            $data = $result['Body']->read($length);
+            // ファイルに書き込む
+            file_put_contents($localPath, $data);
+            parent::setInfoLog("getFile END");
+            #ファイルパスを返す
+            return $localPath;
     }
 }
-?>
-	

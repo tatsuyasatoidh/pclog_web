@@ -6,32 +6,35 @@ class_exists('lib\Controller\ParentController') or require_once  $_SERVER['DOCUM
 
 use lib\Controller\ParentController as ParentController;
 
-class Download extends ParentController{
+class Download extends ParentController
+{
     
-    public function __construct(){
+    public function __construct()
+    {
     }
     
     /*ファイルをローカルにダウンロード**/
-    public function toLocal($File){
-			parent::setInfoLog("toLocal START");
-			/* File Read */
-			$read_data = file_get_contents($File);
-			$fileName = basename($File);
+    public function toLocal($File)
+    {
+            parent::setInfoLog("toLocal START");
+            /* File Read */
+            $read_data = file_get_contents($File);
+            $fileName = basename($File);
 
-			/* Output HTTP Header */
-			header('Content-Disposition: inline; filename="'.$fileName.'"');
-			header('Content-Type: application/octet-stream');
-						echo $read_data;
-			exit;
+            /* Output HTTP Header */
+            header('Content-Disposition: inline; filename="'.$fileName.'"');
+            header('Content-Type: application/octet-stream');
+                        echo $read_data;
+            exit;
     }
-	
-	/** S3からファイルをダウンロードする処理*/
-	public function getFromS3($localPath,$path)
-	{
-		parent::setInfoLog("getFromS3 START");
-		$s3Manage = new S3Request();
-		parent::setInfoLog("getFromS3 END");
-		#ローカルに取得
-		return $s3Manage->getFile($localPath,$path);
-	}
+    
+    /** S3からファイルをダウンロードする処理*/
+    public function getFromS3($localPath, $path)
+    {
+        parent::setInfoLog("getFromS3 START");
+        $s3Manage = new S3Request();
+        parent::setInfoLog("getFromS3 END");
+        #ローカルに取得
+        return $s3Manage->getFile($localPath, $path);
+    }
 }

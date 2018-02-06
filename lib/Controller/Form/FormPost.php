@@ -15,7 +15,7 @@ class FormPost
     {
         $result = $this->userDao->getUserName();
         $option="";
-        foreach($result as $row){
+        foreach ($result as $row) {
             $option.="<option>".$row['user_name']."</option>";
         }
         return $option;
@@ -25,7 +25,7 @@ class FormPost
     {
         $result = $this->companyDao->getCompanyName();
         $option="";
-        foreach($result as $row){
+        foreach ($result as $row) {
             $option.="<option>".$row['company_name']."</option>";
         }
         return $option;
