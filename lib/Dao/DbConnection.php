@@ -6,13 +6,20 @@ use \PDO;
 class DbConnection extends PDO
 {
     private $pdo;
-    private $hostname = "localhost";
-    private $username = "root";
-    private $password = "";
-    private $dbname = "pclog";
-   
+    
+    const LOCAL_HOSTNAME = "localhost";
+    const LOCAL_USERNAME = "root";
+    const LOCAL_PASSWORD = "";
+    const LOCAL_DBNAME = "pclog";
+    
+    const PRO_HOSTNAME = "pclog.c5q2rhfkfpib.us-west-2.rds.amazonaws.com";
+    const PRO_USERNAME = "root";
+    const PRO_PASSWORD = "idhpclogtool";
+    const PRO_DBNAME = "pclog";
+    
     /**
      * コンストラクタ
+     *
      * @access public
      * @return pdo
      **/
@@ -20,21 +27,19 @@ class DbConnection extends PDO
     {
         try {
             if (@$_SERVER["SERVER_NAME"] === 'localhost') {
-                $dsn = "mysql:dbname=$this->dbname;host=$this->hostname";
-                $user = "$this->username";
-                $password = "$this->password";
-                $this->pdo =  new PDO($dsn, $user, $password, array(PDO::MYSQL_ATTR_LOCAL_INFILE => true));
+                //localhostの場合
+                $dsn = "mysql:dbname=".self::LOCAL_DBNAME.";host=".self::LOCAL_HOSTNAME;
+                $user = self::LOCAL_USERNAME;
+                $password = self::LOCAL_PASSWORD;
             } else {
-                $dbs = "mysql:host=pclog.c5q2rhfkfpib.us-west-2.rds.amazonaws.com;dbname=pclog;charset=utf8";
-                $user = "root";
-                $pass = "idhpclogtool";
-                // $sql = "INSERT INTO [テーブル名] (columnNum,  columnStr) VALUES(10, 'テスト');";
-                // PDOを使ってRDSに接続
-                $this->pdo = new PDO($dbs, $user, $pass, array(PDO::MYSQL_ATTR_LOCAL_INFILE => true));
+                //PROの場合
+                $dsn = "mysql:dbname=".self::PRO_DBNAME.";host=".self::PRO_HOSTNAME;
+                $user = self::PRO_USERNAME;
+                $password = self::PRO_PASSWORD; 
             }
-        } catch (PDOException $e) {
+             $this->pdo = new PDO($dsn, $user, $password, array(PDO::MYSQL_ATTR_LOCAL_INFILE => true));
+        } catch (\PDOException $e) {
             print('Connection failed:'.$e->getMessage());
-            die();
         }finally{
             return $this->pdo;
         }

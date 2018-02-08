@@ -1,4 +1,0 @@
-export AWS_ACCESS_KEY_ID=AKIAJYOVWP63XS7KQXZA
-export AWS_SECRET_ACCESS_KEY=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
-export AWS_DEFAULT_REGION=us-west-2
-complete -C aws_completer aws
