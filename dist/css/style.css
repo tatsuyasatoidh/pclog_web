@@ -1,0 +1,273 @@
+/** ===========
+ヘッダー
+===============**/
+.main-header {
+    position: fixed;
+    max-height: 100px;
+    width: 100%;
+    z-index: 1030;
+    background: #000;
+}
+.main-header>a {
+    color: #b3b3b3;
+}
+
+.main-header>a:hover {
+    color: #fff;
+}
+
+/* ヘッダーメニュー*/
+.nav>li>a, .nav>li>a {
+    text-decoration: none;
+    background-color: initial;
+    color: #b3b3b3;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+    text-decoration: none;
+    background-color: initial;
+    color: #fff;
+}
+
+.main-header .sidebar-toggle {
+    float: left;
+    background-color: transparent;
+    background-image: none;
+    padding: 15px 15px;
+    font-family: fontAwesome;
+    color: #b3b3b3;
+}
+
+@media (max-width: 767px){
+    .main-header .navbar {
+        margin: 0;
+        position: fixed;
+        top: 0;
+        color: #ccc;
+    }
+}
+
+/** サイド　*/
+.main-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 50px;
+    min-height: 100%;
+    width: 230px;
+    z-index: 810;
+    -webkit-transition: -webkit-transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    -moz-transition: -moz-transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    -o-transition: -o-transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    background: #000;
+}
+
+.main-sidebar a{
+    color: #b3b3b3;
+}
+.main-sidebar a:hover{
+    color: #fff;
+}
+
+/** 検索フォーム*/
+
+
+
+.main-sidebar .input-group{
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 10px;
+    display: block;
+}
+
+.main-sidebar .btn{
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 10px;
+    display: block;
+}
+
+.main-sidebar .input-group-btn:last-child>.btn{
+    z-index: 2;
+    margin-left: -1px;
+    border-right: 1px;
+    border-radius: 0px 10px 10px 0px;
+    background-color: #b3b3b3;
+}
+
+.sideVarSearchBox {
+    padding: 2%;
+    background: #151515;
+}
+.sidebar-form>input.form-control {
+    background-color: #151515;
+    border-radius: 10px;
+    border: solid 1px #b3b3b3;
+    color: #fff;
+    display: block;
+    margin-bottom: 4%;
+}
+
+.treeview-menu {
+    display: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    padding-left: 5px;
+    background: #151515;
+}
+
+
+/**
+ * 
+ **/
+.content{
+    margin-top: 45px;
+}
+@media (min-width: 768px) {
+
+}
+
+/**
+ * TOP画面
+ **/
+.top-contents{
+    text-align: center;
+}
+
+.description-header{
+    padding: 20px 20px 20px 20px;
+}
+
+@media (max-width: 768px) {
+    .description-text{
+        padding: 20px 20px 20px 20px;
+    }
+}
+
+
+.box{
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+    border: 5px solid #e5e5e5;
+    clear: both;
+    margin-bottom: 25px;
+    margin-top: 0;
+    padding: 0;
+}
+
+.box-header {
+    margin-bottom: 15px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    color: #999999;
+}
+
+/**
+ * form common
+ */
+.form-box{
+    width: 70%;
+    margin: 7% auto; 
+}
+
+@media (max-width: 768px) {
+    .form-box{
+        width: 90%;
+        margin-top: 20px;
+    }
+}
+
+
+.form-box-body {
+    padding: 20px;
+    border-top: 0;
+    color: #777;
+    
+}
+.box-msg{
+    font-weight: bolder;
+    margin: 0;
+    text-align: left;
+    padding: 10px 20px 20px 20px;
+    color: black;
+}
+
+.small-form-box{
+    width: 50%;
+    margin: 7% auto; 
+}
+
+/** table*/
+
+table{
+    overflow-x: scroll;
+    table-layout: fixed;
+    word-break: break-all;
+    word-wrap: break-all;
+}
+
+/*
+* footer
+* ----------------------
+*/
+footer {
+    text-align: center;
+    background: #000;
+    padding: 20px 20px 20px 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/** =======
+
+労務一覧画面
+=========**/
+
+/** data-box*/
+.small-box {
+    text-decoration: none;
+    min-height: 120px;
+}
+
+.small-box h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    white-space: nowrap;
+    padding: 0;
+}
+
+/** =========
+ユーザー別労務
+==========*/
+.sample1{
+    color: black;
+    text-decoration: none;
+    position: relative;
+}
+
+.sample1-balloon {
+    position: absolute;
+    top: -40px;
+    left: -15px;
+    display: none;
+    padding: 5px;
+    color: white;
+    background-color: blue;
+}
+
+.sample1:hover .sample1-balloon {
+    display: inline-block;
+}
+
+/**
+ * 勤務時間ボックス
+ **/
+span.perfomanced {
+    font-size: 28px;
+    font-weight: bold;
+}

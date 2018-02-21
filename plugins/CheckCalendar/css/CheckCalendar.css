@@ -1,0 +1,94 @@
+
+.checkCalendarTable {
+    clear:both;
+    width:100%;
+    border:1px solid @calendar-border;
+    border-radius:3px;
+    border-collapse:collapse;
+    color:@calendar-color;
+    background:#00ca6d;
+}
+th {
+    height:48px;
+    text-align:center;
+    vertical-align:middle;
+    border-right:1px solid @calendar-border;
+    border-top:1px solid @calendar-border;
+    width:100% / 7;
+    color: #fff
+}
+
+td {
+    height:48px;
+    text-align:center;
+    vertical-align:middle;
+    border-right:1px solid @calendar-border;
+    border-top:1px solid @calendar-border;
+    width:100% / 7;
+    color: #fff;
+}
+td.not-current {
+    color:#777;
+}
+
+td.normal {}
+td.today {
+    color:@calendar-standout;
+}
+thead td {
+    border:none;
+    color:@calendar-standout;
+    text-transform:uppercase;
+    font-size:1.5em;
+}
+
+td.achieved {
+}
+
+.checkSpan {
+    display: block;
+}
+/** 達成日の時間css*/
+td.achieved>.checkSpan {
+    color: yellow;
+    font-weight: bold;
+}
+
+.checkCalendarDate{
+    padding: 2%;
+    width: 100%;
+    font-weight: bold;
+}
+#btnPrev {
+    float:left;
+    margin-bottom:20px;
+    &:before {
+        content:'\f104';
+        font-family:FontAwesome;
+        padding-right:4px;
+    }
+}
+#btnNext {
+    float:right;
+    margin-bottom:20px;
+    &:after {
+        content:'\f105';
+        font-family:FontAwesome;
+        padding-left:4px;
+    }
+}
+#btnPrev, #btnNext {
+    background:transparent;
+    border:none;
+    outline:none;
+    font-size:1em;
+    color:@calendar-fade-color;
+    cursor:pointer;
+    font-family:"Roboto Condensed", sans-serif;
+    text-transform:uppercase;
+    transition:all 0.3s ease;
+    &:hover {
+        color:@calendar-standout;
+        font-weight:bold;
+    }
+}
